@@ -2,55 +2,185 @@
 
 {% block title %}Créer un événement{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        .form-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .form-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .form-control, .form-select, .select2-container--default .select2-selection--multiple {
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #6B48FF;
+            box-shadow: 0 0 0 0.2rem rgba(107, 72, 255, 0.15);
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .select2-container--default .select2-selection--multiple {
+            min-height: 100px;
+            padding: 8px;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background: #6B48FF;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 5px 10px;
+            margin: 3px;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+            color: white;
+            margin-right: 5px;
+        }
+
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: #6B48FF;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6B48FF 0%, #1E90FF 100%);
+            border: none;
+            padding: 12px 24px;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(107, 72, 255, 0.2);
+        }
+
+        .btn-outline-secondary {
+            border: 2px solid #e0e0e0;
+            padding: 12px 24px;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-secondary:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+        }
+
+        .invalid-feedback {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
-<div class="container py-4">
+<div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h1 class="h3 mb-4">Créer un événement</h1>
+            <div class="form-card p-4">
+                <div class="text-center mb-4">
+                    <h1 class="h3 mb-3 fw-bold">Créer un nouvel événement</h1>
+                    <p class="text-muted">Organisez une soirée jeux inoubliable</p>
+                </div>
 
-                    {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
-                    
-                    <div class="row">
-                        <div class="col-md-12 mb-3">
+                {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                
+                <div class="row g-4">
+                    <div class="col-12">
+                        <div class="form-floating">
+                            {{ form_widget(form.name, {
+                                'attr': {
+                                    'class': 'form-control' ~ (form.name.vars.valid ? '' : ' is-invalid'),
+                                    'placeholder': 'Titre de l\'événement'
+                                }
+                            }) }}
                             {{ form_label(form.name) }}
-                            {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
                             {{ form_errors(form.name) }}
                         </div>
+                    </div>
 
-                        <div class="col-md-12 mb-3">
+                    <div class="col-12">
+                        <div class="form-floating">
+                            {{ form_widget(form.description, {
+                                'attr': {
+                                    'class': 'form-control' ~ (form.description.vars.valid ? '' : ' is-invalid'),
+                                    'placeholder': 'Description',
+                                    'style': 'height: 120px'
+                                }
+                            }) }}
                             {{ form_label(form.description) }}
-                            {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': '4'}}) }}
                             {{ form_errors(form.description) }}
                         </div>
+                    </div>
 
-                        <div class="col-md-6 mb-3">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            {{ form_widget(form.date, {
+                                'attr': {
+                                    'class': 'form-control' ~ (form.date.vars.valid ? '' : ' is-invalid'),
+                                    'placeholder': 'Date et heure'
+                                }
+                            }) }}
                             {{ form_label(form.date) }}
-                            {{ form_widget(form.date, {'attr': {'class': 'form-control'}}) }}
                             {{ form_errors(form.date) }}
                         </div>
+                    </div>
 
-                        <div class="col-md-6 mb-3">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            {{ form_widget(form.maxParticipants, {
+                                'attr': {
+                                    'class': 'form-control' ~ (form.maxParticipants.vars.valid ? '' : ' is-invalid'),
+                                    'placeholder': 'Nombre maximum de participants'
+                                }
+                            }) }}
                             {{ form_label(form.maxParticipants) }}
-                            {{ form_widget(form.maxParticipants, {'attr': {'class': 'form-control'}}) }}
                             {{ form_errors(form.maxParticipants) }}
                         </div>
-
-                        <div class="col-md-12 mb-3">
-                            {{ form_label(form.games) }}
-                            {{ form_widget(form.games, {'attr': {'class': 'form-control select2'}}) }}
-                            {{ form_errors(form.games) }}
-                        </div>
                     </div>
 
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <a href="{{ path('app_event_index') }}" class="btn btn-outline-secondary me-2">Annuler</a>
-                        <button type="submit" class="btn btn-primary">Créer l'événement</button>
+                    <div class="col-12">
+                        {{ form_label(form.games) }}
+                        {{ form_widget(form.games, {
+                            'attr': {
+                                'class': 'select2' ~ (form.games.vars.valid ? '' : ' is-invalid'),
+                                'data-placeholder': 'Sélectionnez les jeux...'
+                            }
+                        }) }}
+                        {{ form_errors(form.games) }}
                     </div>
-
-                    {{ form_end(form) }}
                 </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a href="{{ path('app_event_index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Retour
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-calendar-plus me-2"></i>Créer l'événement
+                    </button>
+                </div>
+
+                {{ form_end(form) }}
             </div>
         </div>
     </div>
@@ -58,16 +188,16 @@
 {% endblock %}
 
 {% block javascripts %}
-{{ parent() }}
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<script>
-    $(document).ready(function() {
-        $('.select2').select2({
-            theme: 'classic',
-            placeholder: 'Sélectionnez les jeux...',
-            allowClear: true
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.select2').select2({
+                theme: 'classic',
+                placeholder: 'Sélectionnez les jeux...',
+                allowClear: true,
+                width: '100%'
+            });
         });
-    });
-</script>
+    </script>
 {% endblock %}
