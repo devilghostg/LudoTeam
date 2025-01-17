@@ -2,32 +2,43 @@
 
 namespace App\Form;
 
-use App\Entity\Event;
 use App\Entity\Game;
 use App\Entity\User;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use App\Entity\Event;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 
 class GameType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('name')
-            ->add('maxPlayers')
-            ->add('gameType')
-            ->add('description')
-            ->add('isAvailable')
-            ->add('owner', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'id',
+            ->add('name', TextType::class, [
+                'label' => 'Nom du jeu'
             ])
-            ->add('events', EntityType::class, [
-                'class' => Event::class,
-                'choice_label' => 'id',
-                'multiple' => true,
+            ->add('maxPlayers', NumberType::class, [
+                'label' => 'Nombre maximum de joueurs'
+            ])
+            ->add('gameType', ChoiceType::class, [
+                'label' => 'Type de jeu',
+                'choices' => [
+                    'Jeu de plateau' => 'board',
+                    'Jeu de cartes' => 'card',
+                    'Jeu de duel' => 'duel'
+                ]
+            ])
+            ->add('description', TextareaType::class, [
+                'label' => 'Description',
+                'required' => false
+            ])
+            ->add('isAvailable', null, [
+                'label' => 'Disponible'
             ])
         ;
     }
