@@ -1,150 +1,230 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Jeux - LudoTeam{% endblock %}
-
 {% block stylesheets %}
     {{ parent() }}
     <style>
-        .game-header {
-            background: linear-gradient(135deg, #6B48FF 0%, #1E90FF 100%);
-            padding: 60px 0;
-            color: white;
-            margin-bottom: 40px;
+        /* Styles généraux */
+        body {
+            background-color: #f8f9fa;
         }
 
+        /* Header stylisé */
+        .game-header {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+            padding: 80px 0 100px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: -50px;
+        }
+
+        .game-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQ0MCIgaGVpZ2h0PSI1MDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiIGlkPSJhIj48c3RvcCBzdG9wLWNvbG9yPSIjRkZGIiBvZmZzZXQ9IjAlIi8+PHN0b3Agc3RvcC1jb2xvcj0iI0ZGRiIgc3RvcC1vcGFjaXR5PSIwIiBvZmZzZXQ9IjEwMCUiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cGF0aCBkPSJNMTQ0MCAyMDBjLTEzMS4yIDAtMTYyLjQtOTAtMzIwLTkwcy0yNDggOTAtMzYwIDkwLTIwMC09MC0zNjAtOTBTMjAwIDIwMCAwIDIwMHY1MDBoMTQ0MFYyMDB6IiBmaWxsPSJ1cmwoI2EpIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIG9wYWNpdHk9Ii4wNSIvPjwvc3ZnPg==');
+            background-size: cover;
+            opacity: 0.1;
+        }
+
+        .game-header h1 {
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .game-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* Conteneur principal */
+        .main-container {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Filtres */
+        .filters-section {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            padding: 25px;
+            margin-bottom: 30px;
+            transition: transform 0.3s ease;
+        }
+
+        .filters-section:hover {
+            transform: translateY(-5px);
+        }
+
+        .filter-title {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        /* Cartes de jeux */
         .game-card {
             background: white;
             border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
             margin-bottom: 30px;
             overflow: hidden;
+            transition: all 0.3s ease;
             border: none;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         .game-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
         }
 
         .game-info {
-            padding: 20px;
-        }
-
-        .game-title {
-            font-size: 1.4rem;
-            margin-bottom: 15px;
-            color: #333;
-        }
-
-        .game-meta {
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 15px;
-        }
-
-        .game-meta i {
-            margin-right: 5px;
-            color: #6B48FF;
-        }
-
-        .game-description {
-            color: #555;
-            margin-bottom: 20px;
-        }
-
-        .game-actions {
-            padding: 15px 20px;
-            background: #f8f9fa;
-            border-top: 1px solid #eee;
+            padding: 25px;
+            flex-grow: 1;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .btn-create-game {
-            background: linear-gradient(135deg, #6B48FF 0%, #1E90FF 100%);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            transition: transform 0.3s ease;
-        }
-
-        .btn-create-game:hover {
-            transform: translateY(-2px);
-            color: white;
-            box-shadow: 0 5px 15px rgba(107, 72, 255, 0.3);
-        }
-
-        .game-filter {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .filter-title {
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            color: #333;
-        }
-
-        .btn-delete {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .btn-delete:hover {
-            background: #c82333;
-            transform: translateY(-2px);
-            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
-            color: white;
+            flex-direction: column;
         }
 
         .game-type-badge {
-            background: #6B48FF;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            margin-bottom: 10px;
             display: inline-block;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.2);
+        }
+
+        .game-title {
+            color: #2c3e50;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .game-meta {
+            color: #7f8c8d;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+
+        .game-meta i {
+            color: #FF6B6B;
+            width: 20px;
+            margin-right: 5px;
+        }
+
+        .game-description {
+            color: #34495e;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            flex-grow: 1;
+        }
+
+        .game-actions {
+            padding: 20px 25px;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+        }
+
+        /* Boutons */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+            border: none;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn-create-game {
+            background: white;
+            color: #FF6B6B;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 12px 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-create-game:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            transform: translateY(-2px);
         }
 
         .availability-badge {
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            margin-bottom: 10px;
-            display: inline-block;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
         }
 
         .available {
-            background: #28a745;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             color: white;
         }
 
         .unavailable {
-            background: #dc3545;
+            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
             color: white;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .game-card {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .game-header {
+                padding: 60px 0 80px;
+            }
+
+            .filters-section {
+                margin-bottom: 20px;
+            }
+
+            .game-card {
+                margin-bottom: 20px;
+            }
         }
     </style>
 {% endblock %}
 
 {% block body %}
     <!-- Header Section -->
-    <section class="game-header full-width-section">
+    <section class="game-header">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-md-8">
-                    <h1 class="display-4 mb-3">Jeux de société</h1>
-                    <p class="lead mb-0">Découvrez notre collection de jeux !</p>
+                    <h1 class="display-4 mb-3">Ludothèque</h1>
+                    <p class="lead mb-0">Découvrez notre collection de jeux de société !</p>
                 </div>
                 {% if is_granted('ROLE_USER') %}
                     <div class="col-md-4 text-md-end">
@@ -157,11 +237,11 @@
         </div>
     </section>
 
-    <div class="container">
+    <div class="container main-container">
         <div class="row">
             <!-- Filtres -->
             <div class="col-md-3">
-                <div class="game-filter">
+                <div class="filters-section">
                     <h4 class="filter-title">Filtres</h4>
                     <form method="get" action="{{ path('app_game_index') }}">
                         <!-- Disponibilité -->
@@ -169,8 +249,8 @@
                             <label class="form-label">Disponibilité</label>
                             <select name="availability" class="form-select">
                                 <option value="">Tous les jeux</option>
-                                <option value="available">Disponible</option>
-                                <option value="unavailable">Non disponible</option>
+                                <option value="available">Disponibles</option>
+                                <option value="unavailable">Non disponibles</option>
                             </select>
                         </div>
 
@@ -191,16 +271,16 @@
                             <label class="form-label">Type de jeu</label>
                             <select name="game_type" class="form-select">
                                 <option value="">Tous les types</option>
-                                <option value="Stratégie">Stratégie</option>
-                                <option value="Famille">Famille</option>
-                                <option value="Party">Party</option>
-                                <option value="Cartes">Cartes</option>
+                                <option value="strategy">Stratégie</option>
+                                <option value="family">Famille</option>
+                                <option value="party">Party Game</option>
+                                <option value="cards">Cartes</option>
                             </select>
                         </div>
 
                         <!-- Recherche -->
                         <div class="mb-3">
-                            <label class="form-label">Recherche</label>
+                            <label class="form-label">Rechercher</label>
                             <input type="text" name="search" class="form-control" placeholder="Nom du jeu...">
                         </div>
 
@@ -214,49 +294,57 @@
             <!-- Liste des jeux -->
             <div class="col-md-9">
                 {% if games is empty %}
-                    <div class="empty-state">
-                        <i class="fas fa-dice"></i>
-                        <h3>Aucun jeu pour le moment</h3>
-                        <p>Soyez le premier à ajouter un jeu !</p>
+                    <div class="text-center p-5 bg-white rounded-3 shadow-sm">
+                        <i class="fas fa-dice fa-3x text-muted mb-3"></i>
+                        <h3>Aucun jeu disponible</h3>
+                        <p class="text-muted">Soyez le premier à ajouter un jeu !</p>
+                        {% if is_granted('ROLE_USER') %}
+                            <a href="{{ path('app_game_new') }}" class="btn btn-primary mt-3">
+                                <i class="fas fa-plus-circle me-2"></i>Ajouter un jeu
+                            </a>
+                        {% endif %}
                     </div>
                 {% else %}
                     <div class="row">
                         {% for game in games %}
-                            <div class="col-md-6">
+                            <div class="col-md-6 mb-4">
                                 <div class="game-card">
                                     <div class="game-info">
                                         <span class="game-type-badge">
-                                            <i class="fas fa-dice me-1"></i>{{ game.gameType }}
+                                            <i class="fas fa-dice me-2"></i>{{ game.gameType }}
                                         </span>
                                         <span class="availability-badge {{ game.isAvailable ? 'available' : 'unavailable' }}">
-                                            <i class="fas {{ game.isAvailable ? 'fa-check-circle' : 'fa-times-circle' }} me-1"></i>
-                                            {{ game.isAvailable ? 'Disponible' : 'Non disponible' }}
+                                            {% if game.isAvailable %}
+                                                <i class="fas fa-check-circle me-1"></i>Disponible
+                                            {% else %}
+                                                <i class="fas fa-times-circle me-1"></i>Indisponible
+                                            {% endif %}
                                         </span>
                                         <h3 class="game-title">{{ game.name }}</h3>
                                         <div class="game-meta">
-                                            <p><i class="fas fa-user"></i> Ajouté par {{ game.owner.email }}</p>
-                                            <p><i class="fas fa-users"></i> {{ game.maxPlayers }} joueurs max</p>
+                                            <p><i class="fas fa-user"></i>Propriétaire : {{ game.owner ? game.owner.email : 'Inconnu' }}</p>
+                                            <p><i class="fas fa-users"></i>{{ game.maxPlayers }} joueurs max</p>
+                                            <p><i class="fas fa-gamepad"></i>{{ game.gameType }}</p>
                                         </div>
                                         <div class="game-description">
                                             {{ game.description|slice(0, 150) ~ '...' }}
                                         </div>
                                     </div>
                                     <div class="game-actions">
-                                        <div>
-                                            <a href="#" class="btn btn-primary">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <a href="{{ path('app_game_show', {'id': game.id}) }}" class="btn btn-primary">
                                                 <i class="fas fa-info-circle me-1"></i>Détails
                                             </a>
+                                            {% if is_granted('ROLE_USER') and app.user == game.owner %}
+                                                <form method="post" action="{{ path('app_game_delete_html', {'id': game.id}) }}" 
+                                                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce jeu ?');">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ game.id) }}">
+                                                    <button type="submit" class="btn btn-danger">
+                                                        <i class="fas fa-trash-alt me-1"></i>Supprimer
+                                                    </button>
+                                                </form>
+                                            {% endif %}
                                         </div>
-                                        {% if is_granted('ROLE_USER') and app.user == game.owner %}
-                                            <form method="post" action="{{ path('app_game_delete', {'id': game.id}) }}" 
-                                                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce jeu ?');" 
-                                                  style="display: inline-block;">
-                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ game.id) }}">
-                                                <button type="submit" class="btn btn-delete">
-                                                    <i class="fas fa-trash-alt me-1"></i>Supprimer
-                                                </button>
-                                            </form>
-                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
