@@ -1,0 +1,356 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #6B48FF 0%, #1E90FF 100%);
+            color: white;
+            padding: 120px 0 80px;
+            position: relative;
+            overflow: hidden;
+            min-height: 85vh;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="20" fill="none"/><circle cx="3" cy="3" r="1.5" fill="rgba(255,255,255,0.2)"/></svg>') repeat;
+            opacity: 0.3;
+        }
+
+        .floating-dice {
+            position: absolute;
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.3);
+            animation: float 6s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        .dice-1 { top: 10%; right: 15%; animation-delay: -2s; font-size: 4rem; }
+        .dice-2 { top: 60%; right: 35%; animation-delay: -1s; font-size: 2.5rem; }
+        .dice-3 { top: 30%; right: 60%; animation-delay: -3s; font-size: 3.5rem; }
+        .dice-4 { top: 70%; right: 80%; animation-delay: -4s; font-size: 3rem; }
+        .dice-5 { top: 20%; right: 85%; animation-delay: -2.5s; font-size: 2rem; }
+
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+            100% { transform: translateY(0) rotate(0deg); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-stats {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-item:last-child {
+            border-right: none;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .hero-image {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-card {
+            border: none;
+            border-radius: 15px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            background: white;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #6B48FF 0%, #1E90FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .event-card, .game-card {
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .event-card:hover, .game-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .section-title {
+            position: relative;
+            margin-bottom: 3rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(135deg, #6B48FF 0%, #1E90FF 100%);
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%);
+            padding: 80px 0;
+            margin-top: 4rem;
+        }
+
+        .dice-bg {
+            position: absolute;
+            font-size: 15rem;
+            opacity: 0.1;
+            transform: rotate(-15deg);
+            right: -50px;
+            top: -50px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <!-- Floating Dice -->
+        <i class="fas fa-dice-d20 floating-dice dice-1"></i>
+        <i class="fas fa-dice-d6 floating-dice dice-2"></i>
+        <i class="fas fa-dice-five floating-dice dice-3"></i>
+        <i class="fas fa-dice-six floating-dice dice-4"></i>
+        <i class="fas fa-dice-four floating-dice dice-5"></i>
+
+        <div class="container position-relative">
+            <div class="row align-items-center">
+                <div class="col-lg-6 hero-content">
+                    <h1 class="display-3 fw-bold mb-4">Découvrez LudoTeam</h1>
+                    <p class="lead fs-4 mb-4">
+                        La plateforme qui réunit les passionnés de jeux de société. 
+                        Organisez des parties, partagez votre collection et rencontrez 
+                        d'autres joueurs près de chez vous !
+                    </p>
+                    
+                    {% if not app.user %}
+                        <div class="d-flex gap-3 mb-5">
+                            <a href="{{ path('app_register') }}" class="btn btn-light btn-lg">
+                                <i class="fas fa-dice-d20 me-2"></i>S'inscrire
+                            </a>
+                            <a href="{{ path('app_login') }}" class="btn btn-outline-light btn-lg">
+                                <i class="fas fa-sign-in-alt me-2"></i>Se connecter
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="d-flex gap-3 mb-5">
+                            <a href="{{ path('app_event_new') }}" class="btn btn-light btn-lg">
+                                <i class="fas fa-plus-circle me-2"></i>Créer un événement
+                            </a>
+                            <a href="{{ path('app_game_index') }}" class="btn btn-outline-light btn-lg">
+                                <i class="fas fa-dice me-2"></i>Voir les jeux
+                            </a>
+                        </div>
+                    {% endif %}
+
+                    <div class="hero-stats">
+                        <div class="row">
+                            <div class="col-md-4 stat-item">
+                                <div class="stat-number">{{ latestEvents|length }}</div>
+                                <div class="stat-label">Événements à venir</div>
+                            </div>
+                            <div class="col-md-4 stat-item">
+                                <div class="stat-number">{{ latestGames|length }}</div>
+                                <div class="stat-label">Jeux disponibles</div>
+                            </div>
+                            <div class="col-md-4 stat-item">
+                                <div class="stat-number">24/7</div>
+                                <div class="stat-label">Communauté active</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 hero-image d-none d-lg-block">
+                    <div class="text-center">
+                        <img src="https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
+                             alt="Jeux de société" 
+                             class="img-fluid"
+                             style="max-height: 500px; object-fit: cover;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <a href="{{ path('app_event_index') }}" class="text-decoration-none text-dark">
+                        <div class="feature-card card h-100 p-4">
+                            <div class="card-body text-center">
+                                <i class="fas fa-calendar-alt feature-icon"></i>
+                                <h3 class="card-title">Événements</h3>
+                                <p class="card-text">Participez à des événements de jeux ou créez les vôtres.</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a href="{{ path('app_game_index') }}" class="text-decoration-none text-dark">
+                        <div class="feature-card card h-100 p-4">
+                            <div class="card-body text-center">
+                                <i class="fas fa-dice feature-icon"></i>
+                                <h3 class="card-title">Jeux</h3>
+                                <p class="card-text">Découvrez notre collection de jeux de société.</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-4">
+                    <a href="{{ path('app_event_new') }}" class="text-decoration-none text-dark">
+                        <div class="feature-card card h-100 p-4">
+                            <div class="card-body text-center">
+                                <i class="fas fa-users feature-icon"></i>
+                                <h3 class="card-title">Communauté</h3>
+                                <p class="card-text">Rejoignez une communauté active de joueurs.</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Latest Events Section -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <h2 class="section-title">Derniers Événements</h2>
+            <div class="row g-4">
+                {% for event in latestEvents %}
+                    <div class="col-md-4">
+                        <div class="event-card card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ event.name }}</h5>
+                                <p class="card-text">
+                                    <i class="fas fa-calendar-day me-2"></i>
+                                    {{ event.date ? event.date|date('d/m/Y H:i') : '' }}
+                                </p>
+                                <p class="card-text">
+                                    <i class="fas fa-users me-2"></i>
+                                    {{ event.maxParticipants }} participants max
+                                </p>
+                                {% if event.description %}
+                                    <p class="card-text">{{ event.description|slice(0, 100) }}...</p>
+                                {% endif %}
+                                <a href="{{ path('app_event_show', {'id': event.id}) }}" class="btn btn-outline-primary">
+                                    En savoir plus
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            Aucun événement prévu pour le moment.
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Latest Games Section -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="section-title">Jeux Récents</h2>
+            <div class="row g-4">
+                {% for game in latestGames %}
+                    <div class="col-md-3">
+                        <div class="game-card card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ game.name }}</h5>
+                                <p class="card-text">
+                                    <i class="fas fa-users me-2"></i>
+                                    {{ game.maxPlayers }} joueurs max
+                                </p>
+                                <p class="card-text">
+                                    <i class="fas fa-gamepad me-2"></i>
+                                    {{ game.gameType }}
+                                </p>
+                                <a href="{{ path('app_game_show', {'id': game.id}) }}" class="btn btn-outline-primary">
+                                    Voir le jeu
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            Aucun jeu disponible pour le moment.
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container text-center">
+            <h2 class="display-5 mb-4">Prêt à rejoindre l'aventure ?</h2>
+            <p class="lead mb-4">Créez votre compte gratuitement et commencez à participer aux événements !</p>
+            {% if not app.user %}
+                <a href="{{ path('app_register') }}" class="btn btn-dark btn-lg">
+                    <i class="fas fa-dice-d20 me-2"></i>Rejoindre LudoTeam
+                </a>
+            {% else %}
+                <a href="{{ path('app_event_new') }}" class="btn btn-dark btn-lg">
+                    <i class="fas fa-plus-circle me-2"></i>Créer un événement
+                </a>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}
