@@ -2,85 +2,306 @@
 
 {% block title %}{{ game.name }} - LudoTeam{% endblock %}
 
-{% block body %}
-    <div class="container">
-        <nav aria-label="breadcrumb" class="mb-4">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ path('app_game_index') }}">Jeux</a></li>
-                <li class="breadcrumb-item active">{{ game.name }}</li>
-            </ol>
-        </nav>
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .game-show-header {
+            background: linear-gradient(135deg, #6B48FF 0%, #1E90FF 100%);
+            padding: 60px 0;
+            color: white;
+            margin-bottom: 40px;
+        }
 
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-8">
-                        <h1 class="card-title mb-4">{{ game.name }}</h1>
-                        
-                        <div class="mb-4">
-                            <h5 class="text-muted">Détails du jeu</h5>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p>
-                                        <i class="fas fa-users me-2"></i>
-                                        <strong>Nombre maximum de joueurs :</strong> {{ game.maxPlayers }}
-                                    </p>
-                                    <p>
-                                        <i class="fas fa-gamepad me-2"></i>
-                                        <strong>Type de jeu :</strong> 
-                                        {% if game.gameType == 'board' %}
-                                            Jeu de plateau
-                                        {% elseif game.gameType == 'card' %}
-                                            Jeu de cartes
-                                        {% elseif game.gameType == 'duel' %}
-                                            Jeu de duel
-                                        {% endif %}
-                                    </p>
-                                    <p>
-                                        <i class="fas fa-circle me-2 {% if game.isAvailable %}text-success{% else %}text-danger{% endif %}"></i>
-                                        <strong>Statut :</strong> 
-                                        {{ game.isAvailable ? 'Disponible' : 'Non disponible' }}
-                                    </p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p>
-                                        <i class="fas fa-user me-2"></i>
-                                        <strong>Propriétaire :</strong> 
-                                        {{ game.owner.email }}
-                                    </p>
-                                </div>
-                            </div>
+        .game-show-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .game-show-info {
+            padding: 30px;
+        }
+
+        .game-meta-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .game-meta-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .game-meta-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .game-meta-icon {
+            width: 45px;
+            height: 45px;
+            background: rgba(107, 72, 255, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+
+        .game-meta-icon i {
+            font-size: 1.2rem;
+            color: #6B48FF;
+        }
+
+        .game-meta-content {
+            flex-grow: 1;
+        }
+
+        .game-meta-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .game-meta-value {
+            font-size: 1.1rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .game-image-section {
+            height: 300px;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .game-image-section i {
+            font-size: 6rem;
+            color: #6B48FF;
+        }
+
+        .game-type-badge {
+            display: inline-block;
+            background: rgba(107, 72, 255, 0.1);
+            color: #6B48FF;
+            padding: 8px 15px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        .game-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn-edit-game {
+            background: linear-gradient(135deg, #6B48FF 0%, #1E90FF 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-edit-game:hover {
+            transform: translateY(-2px);
+            color: white;
+            box-shadow: 0 5px 15px rgba(107, 72, 255, 0.3);
+        }
+
+        .upcoming-events {
+            margin-top: 30px;
+        }
+
+        .event-mini-card {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .event-mini-card:hover {
+            transform: translateX(5px);
+            background: #f0f2f5;
+        }
+
+        .event-mini-date {
+            min-width: 80px;
+            text-align: center;
+            padding-right: 15px;
+            border-right: 2px solid #e9ecef;
+            margin-right: 15px;
+        }
+
+        .event-mini-day {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #6B48FF;
+        }
+
+        .event-mini-month {
+            font-size: 0.8rem;
+            color: #666;
+            text-transform: uppercase;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <!-- Header Section -->
+    <section class="game-show-header full-width-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-4 mb-3">{{ game.name }}</h1>
+                    <p class="lead mb-0">
+                        <i class="fas fa-dice me-2"></i>{{ game.gameType }}
+                    </p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    {% if is_granted('ROLE_USER') %}
+                        <a href="{{ path('app_game_edit', {'id': game.id}) }}" class="btn btn-edit-game">
+                            <i class="fas fa-edit me-2"></i>Modifier le jeu
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="row">
+            <!-- Informations principales -->
+            <div class="col-md-8">
+                <div class="game-image-section">
+                    {% if game.image is defined and game.image %}
+                        <img src="{{ asset(game.image) }}" alt="{{ game.name }}" class="img-fluid">
+                    {% else %}
+                        <i class="fas fa-dice-d20"></i>
+                    {% endif %}
+                </div>
+
+                <div class="game-show-card">
+                    <div class="game-show-info">
+                        <span class="game-type-badge">
+                            <i class="fas fa-tags me-2"></i>{{ game.gameType }}
+                        </span>
+
+                        <h2 class="mb-4">Description</h2>
+                        <div class="game-description mb-4">
+                            {{ game.description|nl2br }}
                         </div>
 
-                        {% if game.description %}
-                            <div class="mb-4">
-                                <h5 class="text-muted">Description</h5>
-                                <p class="card-text">{{ game.description|nl2br }}</p>
+                        {% if is_granted('ROLE_USER') %}
+                            <div class="game-actions">
+                                <a href="{{ path('app_game_edit', {'id': game.id}) }}" class="btn btn-outline-primary">
+                                    <i class="fas fa-edit me-2"></i>Modifier
+                                </a>
+                                {{ include('game/_delete_form.html.twig') }}
                             </div>
                         {% endif %}
                     </div>
+                </div>
 
-                    <div class="col-md-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Actions</h5>
-                                {% if app.user and app.user == game.owner %}
-                                    <div class="d-grid gap-2">
-                                        <a href="#" class="btn btn-primary">
-                                            <i class="fas fa-edit me-2"></i>Modifier
-                                        </a>
-                                        <a href="#" class="btn btn-danger">
-                                            <i class="fas fa-trash me-2"></i>Supprimer
-                                        </a>
-                                    </div>
-                                {% else %}
-                                    <div class="alert alert-info mb-0">
-                                        <i class="fas fa-info-circle me-2"></i>
-                                        Vous devez être le propriétaire du jeu pour le modifier.
-                                    </div>
-                                {% endif %}
+                <!-- Événements à venir avec ce jeu -->
+                <div class="upcoming-events">
+                    <h2 class="mb-4">Prochains événements</h2>
+                    {% if game.events is defined and game.events is not empty %}
+                        {% for event in game.events %}
+                            <a href="{{ path('app_event_show', {'id': event.id}) }}" class="event-mini-card text-decoration-none">
+                                <div class="event-mini-date">
+                                    <div class="event-mini-day">{{ event.date|date('d') }}</div>
+                                    <div class="event-mini-month">{{ event.date|date('M') }}</div>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">{{ event.name }}</h5>
+                                    <small class="text-muted">
+                                        <i class="fas fa-users me-1"></i>
+                                        {{ event.participants|length }}/{{ event.maxParticipants }} participants
+                                    </small>
+                                </div>
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">Aucun événement prévu avec ce jeu</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Sidebar avec métadonnées -->
+            <div class="col-md-4">
+                <div class="game-meta-card">
+                    <div class="game-meta-item">
+                        <div class="game-meta-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="game-meta-content">
+                            <div class="game-meta-label">Nombre de joueurs</div>
+                            <div class="game-meta-value">{{ game.maxPlayers }} joueurs max</div>
+                        </div>
+                    </div>
+
+                    <div class="game-meta-item">
+                        <div class="game-meta-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="game-meta-content">
+                            <div class="game-meta-label">Durée moyenne</div>
+                            <div class="game-meta-value">{{ game.duration ?? '30-60' }} minutes</div>
+                        </div>
+                    </div>
+
+                    <div class="game-meta-item">
+                        <div class="game-meta-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="game-meta-content">
+                            <div class="game-meta-label">Difficulté</div>
+                            <div class="game-meta-value">{{ game.difficulty ?? 'Intermédiaire' }}</div>
+                        </div>
+                    </div>
+
+                    {% if game.isAvailable %}
+                        <div class="game-meta-item">
+                            <div class="game-meta-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="game-meta-content">
+                                <div class="game-meta-label">Disponibilité</div>
+                                <div class="game-meta-value text-success">Disponible</div>
                             </div>
                         </div>
+                    {% endif %}
+                </div>
+
+                <div class="game-meta-card">
+                    <h3 class="h5 mb-3">Partager ce jeu</h3>
+                    <div class="d-flex gap-2">
+                        <a href="#" class="btn btn-outline-primary flex-grow-1">
+                            <i class="fab fa-facebook-f me-2"></i>Facebook
+                        </a>
+                        <a href="#" class="btn btn-outline-info flex-grow-1">
+                            <i class="fab fa-twitter me-2"></i>Twitter
+                        </a>
                     </div>
                 </div>
             </div>

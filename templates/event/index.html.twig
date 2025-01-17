@@ -1,52 +1,206 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Liste des événements{% endblock %}
+{% block title %}Événements - LudoTeam{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .event-header {
+            background: linear-gradient(135deg, #6B48FF 0%, #1E90FF 100%);
+            padding: 60px 0;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .event-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 30px;
+            overflow: hidden;
+            border: none;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .event-date {
+            background: linear-gradient(135deg, #6B48FF 0%, #1E90FF 100%);
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .event-info {
+            padding: 20px;
+        }
+
+        .event-title {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .event-meta {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .event-meta i {
+            margin-right: 5px;
+            color: #6B48FF;
+        }
+
+        .event-description {
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .event-actions {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+        }
+
+        .btn-create-event {
+            background: linear-gradient(135deg, #6B48FF 0%, #1E90FF 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-create-event:hover {
+            transform: translateY(-2px);
+            color: white;
+            box-shadow: 0 5px 15px rgba(107, 72, 255, 0.3);
+        }
+
+        .event-filter {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: #6B48FF;
+            margin-bottom: 20px;
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
-    <div class="container mt-4">
-        <h1>Liste des événements</h1>
-
-        {% for message in app.flashes('success') %}
-            <div class="alert alert-success">
-                {{ message }}
+    <!-- Header Section -->
+    <section class="event-header full-width-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-4 mb-3">Événements</h1>
+                    <p class="lead mb-0">Découvrez et rejoignez les prochaines parties de jeux de société</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    {% if app.user %}
+                        <a href="{{ path('app_event_new') }}" class="btn btn-create-event">
+                            <i class="fas fa-plus-circle me-2"></i>Créer un événement
+                        </a>
+                    {% endif %}
+                </div>
             </div>
-        {% endfor %}
+        </div>
+    </section>
 
-        <a href="{{ path('app_event_new') }}" class="btn btn-primary mb-3">Créer un événement</a>
-
+    <div class="container">
         <div class="row">
-            {% for event in events %}
-                <div class="col-md-4 mb-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ event.name }}</h5>
-                            <p class="card-text">
-                                <strong>Date:</strong> {{ event.date ? event.date|date('Y-m-d H:i') : '' }}<br>
-                                <strong>Participants max:</strong> {{ event.maxParticipants }}<br>
-                                <strong>Description:</strong> {{ event.description|slice(0, 100) }}...
-                            </p>
-                            <div class="d-flex justify-content-between">
-                                <a href="{{ path('app_event_show', {'id': event.id}) }}" class="btn btn-info">Voir</a>
-                                {% if app.user == event.organizer %}
-                                    <div>
-                                        <a href="{{ path('app_event_edit', {'id': event.id}) }}" class="btn btn-warning">Modifier</a>
-                                        <form method="post" action="{{ path('app_event_delete', {'id': event.id}) }}" 
-                                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ?');" 
-                                              style="display: inline-block">
-                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ event.id) }}">
-                                            <button class="btn btn-danger">Supprimer</button>
-                                        </form>
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
+            <!-- Filtres -->
+            <div class="col-md-3">
+                <div class="event-filter">
+                    <h4 class="filter-title">Filtres</h4>
+                    <div class="mb-3">
+                        <label class="form-label">Date</label>
+                        <select class="form-select">
+                            <option>Tous</option>
+                            <option>Cette semaine</option>
+                            <option>Ce mois</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Jeux</label>
+                        <select class="form-select">
+                            <option>Tous les jeux</option>
+                        </select>
                     </div>
                 </div>
-            {% else %}
-                <div class="col">
-                    <p>Aucun événement trouvé.</p>
-                </div>
-            {% endfor %}
+            </div>
+
+            <!-- Liste des événements -->
+            <div class="col-md-9">
+                {% if events is empty %}
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-times"></i>
+                        <h3>Aucun événement pour le moment</h3>
+                        <p class="text-muted">Soyez le premier à créer un événement !</p>
+                        {% if app.user %}
+                            <a href="{{ path('app_event_new') }}" class="btn btn-create-event mt-3">
+                                <i class="fas fa-plus-circle me-2"></i>Créer un événement
+                            </a>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div class="row">
+                        {% for event in events %}
+                            <div class="col-md-6">
+                                <div class="event-card">
+                                    <div class="event-info">
+                                        <div class="event-date">
+                                            {{ event.date ? event.date|date('d/m/Y H:i') : '' }}
+                                        </div>
+                                        <h3 class="event-title">{{ event.name }}</h3>
+                                        <div class="event-meta">
+                                            <p><i class="fas fa-users"></i> {{ event.maxParticipants }} participants max</p>
+                                            {% if event.organizer %}
+                                                <p><i class="fas fa-user"></i> Organisé par {{ event.organizer.email }}</p>
+                                            {% endif %}
+                                        </div>
+                                        <div class="event-description">
+                                            {{ event.description|slice(0, 150) }}...
+                                        </div>
+                                    </div>
+                                    <div class="event-actions">
+                                        <a href="{{ path('app_event_show', {'id': event.id}) }}" class="btn btn-outline-primary">
+                                            <i class="fas fa-info-circle me-2"></i>Voir les détails
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
         </div>
     </div>
 {% endblock %}
