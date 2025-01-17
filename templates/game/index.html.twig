@@ -1,20 +1,55 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello GameController!{% endblock %}
+{% block title %}Liste des Jeux - LudoTeam{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Liste des Jeux</h1>
+            <a href="{{ path('app_game_new') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Ajouter un jeu
+            </a>
+        </div>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/Users/slup_dev/Desktop/symfonyExpernet/LudoTeam/src/Controller/GameController.php</code></li>
-        <li>Your template at <code>/Users/slup_dev/Desktop/symfonyExpernet/LudoTeam/templates/game/index.html.twig</code></li>
-    </ul>
-</div>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for game in games %}
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ game.name }}</h5>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    <i class="fas fa-users"></i> Max {{ game.maxPlayers }} joueurs
+                                </small>
+                                <br>
+                                <small class="text-muted">
+                                    <i class="fas fa-gamepad"></i> {{ game.gameType }}
+                                </small>
+                            </p>
+                            {% if game.description %}
+                                <p class="card-text">{{ game.description|slice(0, 100) }}...</p>
+                            {% endif %}
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    <i class="fas fa-circle {% if game.isAvailable %}text-success{% else %}text-danger{% endif %}"></i>
+                                    {{ game.isAvailable ? 'Disponible' : 'Non disponible' }}
+                                </small>
+                            </p>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <a href="{{ path('app_game_show', {'id': game.id}) }}" class="btn btn-sm btn-outline-primary">
+                                Voir les détails
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        Aucun jeu n'a été ajouté pour le moment.
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}

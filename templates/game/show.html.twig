@@ -1,0 +1,89 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ game.name }} - LudoTeam{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('app_game_index') }}">Jeux</a></li>
+                <li class="breadcrumb-item active">{{ game.name }}</li>
+            </ol>
+        </nav>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h1 class="card-title mb-4">{{ game.name }}</h1>
+                        
+                        <div class="mb-4">
+                            <h5 class="text-muted">Détails du jeu</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p>
+                                        <i class="fas fa-users me-2"></i>
+                                        <strong>Nombre maximum de joueurs :</strong> {{ game.maxPlayers }}
+                                    </p>
+                                    <p>
+                                        <i class="fas fa-gamepad me-2"></i>
+                                        <strong>Type de jeu :</strong> 
+                                        {% if game.gameType == 'board' %}
+                                            Jeu de plateau
+                                        {% elseif game.gameType == 'card' %}
+                                            Jeu de cartes
+                                        {% elseif game.gameType == 'duel' %}
+                                            Jeu de duel
+                                        {% endif %}
+                                    </p>
+                                    <p>
+                                        <i class="fas fa-circle me-2 {% if game.isAvailable %}text-success{% else %}text-danger{% endif %}"></i>
+                                        <strong>Statut :</strong> 
+                                        {{ game.isAvailable ? 'Disponible' : 'Non disponible' }}
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>
+                                        <i class="fas fa-user me-2"></i>
+                                        <strong>Propriétaire :</strong> 
+                                        {{ game.owner.email }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if game.description %}
+                            <div class="mb-4">
+                                <h5 class="text-muted">Description</h5>
+                                <p class="card-text">{{ game.description|nl2br }}</p>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Actions</h5>
+                                {% if app.user and app.user == game.owner %}
+                                    <div class="d-grid gap-2">
+                                        <a href="#" class="btn btn-primary">
+                                            <i class="fas fa-edit me-2"></i>Modifier
+                                        </a>
+                                        <a href="#" class="btn btn-danger">
+                                            <i class="fas fa-trash me-2"></i>Supprimer
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-info mb-0">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        Vous devez être le propriétaire du jeu pour le modifier.
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
