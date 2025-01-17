@@ -16,9 +16,9 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('app_event_index');
         }
 
-        // get the login error if there is one
+        // get the login error 
         $error = $authenticationUtils->getLastAuthenticationError();
-        // last username entered by the user
+        // last username 
         $lastUsername = $authenticationUtils->getLastUsername();
 
         return $this->render('security/login.html.twig', [
@@ -30,6 +30,6 @@ class SecurityController extends AbstractController
     #[Route(path: '/logout', name: 'app_logout')]
     public function logout(): void
     {
-        // Cette méthode peut rester vide - elle sera interceptée par la configuration de sécurité
+        
     }
 }
