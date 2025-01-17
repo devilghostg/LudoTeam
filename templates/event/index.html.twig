@@ -1,20 +1,36 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello EventController!{% endblock %}
+{% block title %}Liste des événements{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    <div class="container mt-4">
+        <h1>Liste des événements</h1>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+        <a href="{{ path('app_event_new') }}" class="btn btn-primary mb-3">Créer un événement</a>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/Users/slup_dev/Desktop/symfonyExpernet/LudoTeam/src/Controller/EventController.php</code></li>
-        <li>Your template at <code>/Users/slup_dev/Desktop/symfonyExpernet/LudoTeam/templates/event/index.html.twig</code></li>
-    </ul>
-</div>
+        <div class="row">
+            {% for event in events %}
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ event.name }}</h5>
+                            <p class="card-text">
+                                <strong>Date:</strong> {{ event.date ? event.date|date('Y-m-d H:i') : '' }}<br>
+                                <strong>Participants max:</strong> {{ event.maxParticipants }}<br>
+                                <strong>Description:</strong> {{ event.description }}
+                            </p>
+                            <a href="{{ path('app_event_show', {'id': event.id}) }}" class="btn btn-info">Voir</a>
+                            {% if app.user == event.organizer %}
+                                <a href="{{ path('app_event_edit', {'id': event.id}) }}" class="btn btn-warning">Modifier</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col">
+                    <p>Aucun événement trouvé.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}
