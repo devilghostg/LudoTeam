@@ -20,12 +20,11 @@
 
         .event-header::before {
             content: '';
-            position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQ0MCIgaGVpZ2h0PSI1MDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiIGlkPSJhIj48c3RvcCBzdG9wLWNvbG9yPSIjRkZGIiBvZmZzZXQ9IjAlIi8+PHN0b3Agc3RvcC1jb2xvcj0iI0ZGRiIgc3RvcC1vcGFjaXR5PSIwIiBvZmZzZXQ9IjEwMCUiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cGF0aCBkPSJNMTQ0MCAyMDBjLTEzMS4yIDAtMTYyLjQtOTAtMzIwLTkwcy0yNDggOTAtMzYwIDkwLTIwMC05MC0zNjAtOTBTMjAwIDIwMCAwIDIwMHY1MDBoMTQ0MFYyMDB6IiBmaWxsPSJ1cmwoI2EpIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIG9wYWNpdHk9Ii4wNSIvPjwvc3ZnPg==');
+            background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQ0MCIgaGVpZ2h0PSI1MDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiIGlkPSJhIj48c3RvcCBzdG9wLWNvbG9yPSIjRkZGIiBvZmZzZXQ9IjAlIi8+PHN0b3Agc3RvcC1jb2xvcj0iI0ZGRiIgc3RvcC1vcGFjaXR5PSIwIiBvZmZzZXQ9IjEwMCUiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cGF0aCBkPSJNMTQ0MCAyMDBjLTEzMS4yIDAtMTYyLjQtOTAtMzIwLTkwcy0yNDggOTAtMzYwIDkwLTIwMC09MC0zNjAtOTBTMjAwIDIwMCAwIDIwMHY1MDBoMTQ0MFYyMDB6IiBmaWxsPSJ1cmwoI2EpIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIG9wYWNpdHk9Ii4wNSIvPjwvc3ZnPg==');
             background-size: cover;
             opacity: 0.1;
         }
@@ -227,6 +226,12 @@
                     <div class="col-md-4 text-md-end">
                         <a href="{{ path('app_event_new') }}" class="btn btn-create-event">
                             <i class="fas fa-plus-circle me-2"></i>Créer un événement
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="col-md-4 text-md-end">
+                        <a href="{{ path('app_login') }}" class="btn btn-create-event">
+                            <i class="fas fa-sign-in-alt me-2"></i>Connectez-vous pour créer un événement
                         </a>
                     </div>
                 {% endif %}

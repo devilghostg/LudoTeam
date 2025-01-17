@@ -84,6 +84,7 @@ final class GameController extends AbstractController
     }
 
     #[Route('/new', name: 'app_game_new', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_USER')]
     public function new(Request $request): Response
     {
         $game = new Game();

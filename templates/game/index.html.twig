@@ -20,7 +20,6 @@
 
         .game-header::before {
             content: '';
-            position: absolute;
             top: 0;
             left: 0;
             right: 0;
@@ -230,6 +229,12 @@
                     <div class="col-md-4 text-md-end">
                         <a href="{{ path('app_game_new') }}" class="btn btn-create-game">
                             <i class="fas fa-plus-circle me-2"></i>Ajouter un jeu
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="col-md-4 text-md-end">
+                        <a href="{{ path('app_login') }}" class="btn btn-create-game">
+                            <i class="fas fa-sign-in-alt me-2"></i>Connectez-vous pour ajouter un jeu
                         </a>
                     </div>
                 {% endif %}

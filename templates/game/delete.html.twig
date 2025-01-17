@@ -1,0 +1,6 @@
+<form method="post" action="{{ path('app_game_delete', {'id': game.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce jeu ?');" class="d-inline-block">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ game.id) }}">
+    <button class="btn btn-danger">
+        <i class="fas fa-trash-alt me-2"></i>Supprimer
+    </button>
+</form>

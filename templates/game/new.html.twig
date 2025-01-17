@@ -1,175 +1,125 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Ajouter un jeu{% endblock %}
+{% block title %}Nouveau Jeu - LudoTeam{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
     <style>
-        .form-card {
+        .form-container {
             background: white;
             border-radius: 15px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease;
-        }
-        
-        .form-card:hover {
-            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            padding: 2rem;
+            margin-top: 2rem;
         }
 
-        .form-control, .form-select {
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
-            padding: 12px;
-            transition: all 0.3s ease;
+        .form-header {
+            margin-bottom: 2rem;
+            text-align: center;
         }
 
-        .form-control:focus, .form-select:focus {
-            border-color: #6B48FF;
-            box-shadow: 0 0 0 0.2rem rgba(107, 72, 255, 0.15);
+        .form-header h1 {
+            color: #2c3e50;
+            font-weight: 600;
         }
 
-        .form-label {
-            font-weight: 500;
-            color: #333;
-            margin-bottom: 0.5rem;
-        }
-
-        .form-check-input:checked {
-            background-color: #6B48FF;
-            border-color: #6B48FF;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #6B48FF 0%, #1E90FF 100%);
+        .btn-submit {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
             border: none;
-            padding: 12px 24px;
-            font-weight: 500;
-            border-radius: 8px;
+            padding: 12px 25px;
+            color: white;
+            font-weight: 600;
+            border-radius: 25px;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.2);
             transition: all 0.3s ease;
         }
 
-        .btn-primary:hover {
+        .btn-submit:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(107, 72, 255, 0.2);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+            color: white;
         }
 
-        .btn-outline-secondary {
-            border: 2px solid #e0e0e0;
-            padding: 12px 24px;
-            font-weight: 500;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .btn-outline-secondary:hover {
+        .btn-cancel {
             background: #f8f9fa;
-            transform: translateY(-2px);
+            border: 2px solid #e9ecef;
+            padding: 12px 25px;
+            color: #6c757d;
+            font-weight: 600;
+            border-radius: 25px;
+            transition: all 0.3s ease;
         }
 
-        .invalid-feedback {
-            color: #dc3545;
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
+        .btn-cancel:hover {
+            background: #e9ecef;
+            color: #495057;
         }
     </style>
 {% endblock %}
 
 {% block body %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="form-card p-4">
-                <div class="text-center mb-4">
-                    <h1 class="h3 mb-3 fw-bold">Ajouter un nouveau jeu</h1>
-                    <p class="text-muted">Partagez vos jeux avec la communauté</p>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="form-container">
+                    <div class="form-header">
+                        <h1>Ajouter un nouveau jeu</h1>
+                        <p class="text-muted">Partagez votre jeu avec la communauté !</p>
+                    </div>
+
+                    {{ form_start(form) }}
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            {{ form_row(form.name, {
+                                'label': 'Nom du jeu',
+                                'attr': {'class': 'form-control', 'placeholder': 'Ex: Monopoly'}
+                            }) }}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            {{ form_row(form.gameType, {
+                                'label': 'Type de jeu',
+                                'attr': {'class': 'form-select'}
+                            }) }}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            {{ form_row(form.maxPlayers, {
+                                'label': 'Nombre maximum de joueurs',
+                                'attr': {'class': 'form-control', 'min': '1'}
+                            }) }}
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            {{ form_row(form.description, {
+                                'label': 'Description',
+                                'attr': {
+                                    'class': 'form-control',
+                                    'rows': '5',
+                                    'placeholder': 'Décrivez le jeu, ses règles, son état...'
+                                }
+                            }) }}
+                        </div>
+
+                        <div class="col-md-12 mb-4">
+                            {{ form_row(form.isAvailable, {
+                                'label': 'Disponible pour le prêt',
+                                'attr': {'class': 'form-check-input'}
+                            }) }}
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ path('app_game_index') }}" class="btn btn-cancel">
+                            <i class="fas fa-arrow-left me-2"></i>Retour
+                        </a>
+                        <button type="submit" class="btn btn-submit">
+                            <i class="fas fa-plus-circle me-2"></i>Créer le jeu
+                        </button>
+                    </div>
+                    {{ form_end(form) }}
                 </div>
-
-                {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
-                
-                <div class="row g-4">
-                    <div class="col-12">
-                        <div class="form-floating">
-                            {{ form_widget(form.name, {
-                                'attr': {
-                                    'class': 'form-control' ~ (form.name.vars.valid ? '' : ' is-invalid'),
-                                    'placeholder': 'Nom du jeu'
-                                }
-                            }) }}
-                            {{ form_label(form.name) }}
-                            {{ form_errors(form.name) }}
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            {{ form_widget(form.maxPlayers, {
-                                'attr': {
-                                    'class': 'form-control' ~ (form.maxPlayers.vars.valid ? '' : ' is-invalid'),
-                                    'placeholder': 'Nombre de joueurs'
-                                }
-                            }) }}
-                            {{ form_label(form.maxPlayers) }}
-                            {{ form_errors(form.maxPlayers) }}
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            {{ form_widget(form.gameType, {
-                                'attr': {
-                                    'class': 'form-select' ~ (form.gameType.vars.valid ? '' : ' is-invalid'),
-                                    'placeholder': 'Type de jeu'
-                                }
-                            }) }}
-                            {{ form_label(form.gameType) }}
-                            {{ form_errors(form.gameType) }}
-                        </div>
-                    </div>
-
-                    <div class="col-12">
-                        <div class="form-floating">
-                            {{ form_widget(form.description, {
-                                'attr': {
-                                    'class': 'form-control' ~ (form.description.vars.valid ? '' : ' is-invalid'),
-                                    'placeholder': 'Description',
-                                    'style': 'height: 120px'
-                                }
-                            }) }}
-                            {{ form_label(form.description) }}
-                            {{ form_errors(form.description) }}
-                        </div>
-                    </div>
-
-                    <div class="col-12">
-                        <div class="form-check form-switch">
-                            {{ form_widget(form.isAvailable, {
-                                'attr': {
-                                    'class': 'form-check-input' ~ (form.isAvailable.vars.valid ? '' : ' is-invalid'),
-                                    'role': 'switch'
-                                }
-                            }) }}
-                            {{ form_label(form.isAvailable, null, {
-                                'label_attr': {
-                                    'class': 'form-check-label'
-                                }
-                            }) }}
-                            {{ form_errors(form.isAvailable) }}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="d-flex justify-content-end gap-2 mt-4">
-                    <a href="{{ path('app_game_index') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left me-2"></i>Retour
-                    </a>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save me-2"></i>Enregistrer le jeu
-                    </button>
-                </div>
-
-                {{ form_end(form) }}
             </div>
         </div>
     </div>
-</div>
 {% endblock %}
