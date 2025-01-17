@@ -5,14 +5,149 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Entity\Event;
+use App\Form\EventType;
+use App\Repository\EventRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
+#[Route('/event')]
 final class EventController extends AbstractController
 {
-    #[Route('/event', name: 'app_event')]
-    public function index(): Response
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private SerializerInterface $serializer
+    ) {}
+
+    #[Route('/', name: 'app_event_index', methods: ['GET'])]
+    public function index(Request $request, EventRepository $eventRepository): Response
     {
+        // Si on demande du JSON
+        if ($request->headers->get('Accept') === 'application/json') {
+            $events = $eventRepository->findAll();
+            return $this->json($events, 200, [], ['groups' => 'event:read']);
+        }
+
+        // Sinon on renvoie du HTML
         return $this->render('event/index.html.twig', [
-            'controller_name' => 'EventController',
+            'events' => $eventRepository->findAll(),
         ]);
+    }
+
+    #[Route('/new', name: 'app_event_new', methods: ['GET', 'POST'])]
+    public function new(Request $request): Response
+    {
+        $event = new Event();
+        $event->setOrganizer($this->getUser());
+
+        // Si c'est une requête API
+        if ($request->headers->get('Content-Type') === 'application/json') {
+            $data = json_decode($request->getContent(), true);
+            
+            // Désérialise les données JSON vers l'objet Event
+            $this->serializer->deserialize(
+                $request->getContent(),
+                Event::class,
+                'json',
+                ['groups' => 'event:write', AbstractNormalizer::OBJECT_TO_POPULATE => $event]
+            );
+
+            $this->entityManager->persist($event);
+            $this->entityManager->flush();
+
+            return $this->json($event, 201, [], ['groups' => 'event:read']);
+        }
+
+        // Sinon on gère le formulaire HTML
+        $form = $this->createForm(EventType::class, $event);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->persist($event);
+            $this->entityManager->flush();
+
+            return $this->redirectToRoute('app_event_index');
+        }
+
+        return $this->render('event/new.html.twig', [
+            'event' => $event,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}', name: 'app_event_show', methods: ['GET'])]
+    public function show(Request $request, Event $event): Response
+    {
+        if ($request->headers->get('Accept') === 'application/json') {
+            return $this->json($event, 200, [], ['groups' => 'event:read']);
+        }
+
+        return $this->render('event/show.html.twig', [
+            'event' => $event,
+        ]);
+    }
+
+    #[Route('/{id}/edit', name: 'app_event_edit', methods: ['GET', 'PUT', 'POST'])]
+    public function edit(Request $request, Event $event): Response
+    {
+        if ($event->getOrganizer() !== $this->getUser()) {
+            throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à modifier cet événement.');
+        }
+
+        // Si c'est une requête API
+        if ($request->headers->get('Content-Type') === 'application/json') {
+            $this->serializer->deserialize(
+                $request->getContent(),
+                Event::class,
+                'json',
+                ['groups' => 'event:write', AbstractNormalizer::OBJECT_TO_POPULATE => $event]
+            );
+
+            $this->entityManager->flush();
+
+            return $this->json($event, 200, [], ['groups' => 'event:read']);
+        }
+
+        // Sinon on gère le formulaire HTML
+        $form = $this->createForm(EventType::class, $event);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->flush();
+
+            return $this->redirectToRoute('app_event_index');
+        }
+
+        return $this->render('event/edit.html.twig', [
+            'event' => $event,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}', name: 'app_event_delete', methods: ['DELETE'])]
+    public function delete(Request $request, Event $event): Response
+    {
+        if ($event->getOrganizer() !== $this->getUser()) {
+            throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à supprimer cet événement.');
+        }
+
+        // Pour l'API, pas besoin de token CSRF
+        if ($request->headers->get('Content-Type') === 'application/json') {
+            $this->entityManager->remove($event);
+            $this->entityManager->flush();
+
+            return new JsonResponse(null, 204);
+        }
+
+        // Pour le formulaire HTML, on vérifie le token CSRF
+        if ($this->isCsrfTokenValid('delete'.$event->getId(), $request->request->get('_token'))) {
+            $this->entityManager->remove($event);
+            $this->entityManager->flush();
+        }
+
+        return $this->redirectToRoute('app_event_index');
     }
 }

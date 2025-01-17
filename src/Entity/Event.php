@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: EventRepository::class)]
 class Event
@@ -15,37 +16,39 @@ class Event
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['event:read'])]
     private ?int $id = null;
 
-    #[Assert\NotBlank] // verifier que le champ n'est pas vide
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Groups(['event:read', 'event:write'])]
     private ?string $name = null;
 
-    #[Assert\NotBlank] // vérifier que le champ n'est pas vide
-    #[Assert\Type("\DateTimeInterface")]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotBlank]
+    #[Assert\Type("\DateTimeInterface")]
+    #[Groups(['event:read', 'event:write'])]
     private ?\DateTimeInterface $date = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['event:read', 'event:write'])]
     private ?string $description = null;
 
-    #[Assert\Positive] // vérifier que la valeur est positive
     #[ORM\Column]
+    #[Assert\Positive]
+    #[Groups(['event:read', 'event:write'])]
     private ?int $maxParticipants = null;
 
     #[ORM\ManyToOne(inversedBy: 'events')]
+    #[Groups(['event:read'])]
     private ?User $organizer = null;
 
-    /**
-     * @var Collection<int, User>
-     */
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'events')]
+    #[Groups(['event:read'])]
     private Collection $participants;
 
-    /**
-     * @var Collection<int, Game>
-     */
     #[ORM\ManyToMany(targetEntity: Game::class, inversedBy: 'events')]
+    #[Groups(['event:read', 'event:write'])]
     private Collection $games;
 
     public function __construct()

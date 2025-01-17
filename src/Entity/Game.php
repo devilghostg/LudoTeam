@@ -2,10 +2,13 @@
 
 namespace App\Entity;
 
+use App\Entity\Event;
+use App\Entity\User;
 use App\Repository\GameRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -15,34 +18,39 @@ class Game
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['game:read'])]
     private ?int $id = null;
 
-    #[Assert\NotBlank] // verifier que le champ n'est pas vide
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Groups(['game:read', 'game:write'])]
     private ?string $name = null;
 
-    #[Assert\Positive] // verifier que la valeur est positive
     #[ORM\Column]
+    #[Assert\Positive]
+    #[Groups(['game:read', 'game:write'])]
     private ?int $maxPlayers = null;
 
-    #[Assert\Choice(choices: ['board', 'card', 'duel'])] // verifier que la valeur est dans la liste
     #[ORM\Column(length: 255)]
+    #[Assert\Choice(choices: ['board', 'card', 'duel'])]
+    #[Groups(['game:read', 'game:write'])]
     private ?string $gameType = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['game:read', 'game:write'])]
     private ?string $description = null;
 
     #[ORM\Column]
+    #[Groups(['game:read', 'game:write'])]
     private ?bool $isAvailable = null;
 
     #[ORM\ManyToOne(inversedBy: 'ownedGames')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['game:read'])]
     private ?User $owner = null;
 
-    /**
-     * @var Collection<int, Event>
-     */
     #[ORM\ManyToMany(targetEntity: Event::class, mappedBy: 'games')]
+    #[Groups(['game:read'])]
     private Collection $events;
 
     public function __construct()
