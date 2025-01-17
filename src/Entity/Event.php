@@ -169,4 +169,12 @@ class Event
 
         return $this;
     }
+
+    /**
+     * Vérifie si l'événement est complet (nombre maximum de participants atteint)
+     */
+    public function isFull(): bool
+    {
+        return $this->participants->count() >= $this->maxParticipants;
+    }
 }

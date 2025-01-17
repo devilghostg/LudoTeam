@@ -7,19 +7,25 @@ use App\Form\GameType;
 use App\Repository\GameRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Core\Authorization\Voter\RoleVoter;
+use Symfony\Component\Security\Core\Authorization\Voter\UserVoter;
+use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 
 #[Route('/game')]
 final class GameController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private SerializerInterface $serializer
+        private SerializerInterface $serializer,
+        private Security $security
     ) {}
 
     #[Route('/', name: 'app_game_index', methods: ['GET'])]
@@ -169,7 +175,7 @@ final class GameController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_game_delete', methods: ['DELETE'])]
-    public function delete(Request $request, Game $game): Response
+    public function deleteApi(Request $request, Game $game): Response
     {
         if ($game->getOwner() !== $this->getUser()) {
             throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à supprimer ce jeu.');
@@ -189,6 +195,22 @@ final class GameController extends AbstractController
             $this->entityManager->flush();
         }
 
+        return $this->redirectToRoute('app_game_index');
+    }
+
+    #[Route('/{id}', name: 'app_game_delete_html', methods: ['POST'])]
+    #[IsGranted('ROLE_USER')]
+    public function delete(Game $game): Response
+    {
+        // Vérifier si l'utilisateur actuel est le propriétaire
+        if ($game->getOwner() !== $this->getUser()) {
+            throw $this->createAccessDeniedException('Vous ne pouvez pas supprimer ce jeu.');
+        }
+
+        $this->entityManager->remove($game);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Le jeu a été supprimé avec succès !');
         return $this->redirectToRoute('app_game_index');
     }
 }

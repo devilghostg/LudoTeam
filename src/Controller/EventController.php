@@ -176,7 +176,7 @@ final class EventController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_event_delete', methods: ['DELETE'])]
-    public function delete(Request $request, Event $event): Response
+    public function deleteApi(Request $request, Event $event): Response
     {
         if ($event->getOrganizer() !== $this->getUser()) {
             throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à supprimer cet événement.');
@@ -196,6 +196,22 @@ final class EventController extends AbstractController
             $this->entityManager->flush();
         }
 
+        return $this->redirectToRoute('app_event_index');
+    }
+
+    #[Route('/{id}', name: 'app_event_delete_html', methods: ['POST'])]
+    #[IsGranted('ROLE_USER')]
+    public function delete(Event $event): Response
+    {
+        // Vérifier si l'utilisateur actuel est l'organisateur
+        if ($event->getOrganizer() !== $this->getUser()) {
+            throw $this->createAccessDeniedException('Vous ne pouvez pas supprimer cet événement.');
+        }
+
+        $this->entityManager->remove($event);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'L\'événement a été supprimé avec succès !');
         return $this->redirectToRoute('app_event_index');
     }
 }

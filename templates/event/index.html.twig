@@ -67,21 +67,25 @@
             padding: 15px 20px;
             background: #f8f9fa;
             border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .btn-create-event {
-            background: linear-gradient(135deg, #6B48FF 0%, #1E90FF 100%);
+        .btn-delete {
+            background: #dc3545;
             color: white;
             border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            transition: transform 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
         }
 
-        .btn-create-event:hover {
+        .btn-delete:hover {
+            background: #c82333;
             transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
             color: white;
-            box-shadow: 0 5px 15px rgba(107, 72, 255, 0.3);
         }
 
         .event-filter {
@@ -100,7 +104,7 @@
 
         .empty-state {
             text-align: center;
-            padding: 40px 20px;
+            padding: 40px;
             background: white;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -121,15 +125,15 @@
             <div class="row align-items-center">
                 <div class="col-md-8">
                     <h1 class="display-4 mb-3">Événements</h1>
-                    <p class="lead mb-0">Découvrez et rejoignez les prochaines parties de jeux de société</p>
+                    <p class="lead mb-0">Découvrez et rejoignez les prochaines soirées jeux !</p>
                 </div>
-                <div class="col-md-4 text-md-end">
-                    {% if app.user %}
+                {% if is_granted('ROLE_USER') %}
+                    <div class="col-md-4 text-md-end">
                         <a href="{{ path('app_event_new') }}" class="btn btn-create-event">
                             <i class="fas fa-plus-circle me-2"></i>Créer un événement
                         </a>
-                    {% endif %}
-                </div>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </section>
@@ -140,37 +144,42 @@
             <div class="col-md-3">
                 <div class="event-filter">
                     <h4 class="filter-title">Filtres</h4>
-                    <form action="{{ path('app_event_index') }}" method="get" id="filterForm">
+                    <form method="get" action="{{ path('app_event_index') }}">
+                        <!-- Date -->
                         <div class="mb-3">
                             <label class="form-label">Date</label>
-                            <select class="form-select" name="date_filter" onchange="this.form.submit()">
-                                <option value="">Tous</option>
-                                <option value="today" {% if app.request.query.get('date_filter') == 'today' %}selected{% endif %}>Aujourd'hui</option>
-                                <option value="week" {% if app.request.query.get('date_filter') == 'week' %}selected{% endif %}>Cette semaine</option>
-                                <option value="month" {% if app.request.query.get('date_filter') == 'month' %}selected{% endif %}>Ce mois</option>
+                            <select name="date_filter" class="form-select">
+                                <option value="">Toutes les dates</option>
+                                <option value="today">Aujourd'hui</option>
+                                <option value="week">Cette semaine</option>
+                                <option value="month">Ce mois</option>
                             </select>
                         </div>
+
+                        <!-- Disponibilité -->
                         <div class="mb-3">
-                            <label class="form-label">Places disponibles</label>
-                            <select class="form-select" name="availability" onchange="this.form.submit()">
-                                <option value="">Tous</option>
-                                <option value="available" {% if app.request.query.get('availability') == 'available' %}selected{% endif %}>Places disponibles</option>
-                                <option value="full" {% if app.request.query.get('availability') == 'full' %}selected{% endif %}>Complet</option>
+                            <label class="form-label">Disponibilité</label>
+                            <select name="availability" class="form-select">
+                                <option value="">Tous les événements</option>
+                                <option value="available">Places disponibles</option>
+                                <option value="full">Complet</option>
                             </select>
                         </div>
-                        {% if games is defined %}
+
+                        <!-- Jeux -->
                         <div class="mb-3">
-                            <label class="form-label">Jeux</label>
-                            <select class="form-select" name="game" onchange="this.form.submit()">
+                            <label class="form-label">Jeu</label>
+                            <select name="game" class="form-select">
                                 <option value="">Tous les jeux</option>
                                 {% for game in games %}
-                                    <option value="{{ game.id }}" {% if app.request.query.get('game') == (game.id ~ '') %}selected{% endif %}>
-                                        {{ game.name }}
-                                    </option>
+                                    <option value="{{ game.id }}">{{ game.name }}</option>
                                 {% endfor %}
                             </select>
                         </div>
-                        {% endif %}
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-filter me-2"></i>Filtrer
+                        </button>
                     </form>
                 </div>
             </div>
@@ -181,12 +190,7 @@
                     <div class="empty-state">
                         <i class="fas fa-calendar-times"></i>
                         <h3>Aucun événement pour le moment</h3>
-                        <p class="text-muted">Soyez le premier à créer un événement !</p>
-                        {% if app.user %}
-                            <a href="{{ path('app_event_new') }}" class="btn btn-create-event mt-3">
-                                <i class="fas fa-plus-circle me-2"></i>Créer un événement
-                            </a>
-                        {% endif %}
+                        <p>Soyez le premier à créer un événement !</p>
                     </div>
                 {% else %}
                     <div class="row">
@@ -195,23 +199,52 @@
                                 <div class="event-card">
                                     <div class="event-info">
                                         <div class="event-date">
-                                            {{ event.date ? event.date|date('d/m/Y H:i') : '' }}
+                                            {{ event.date|date('d/m/Y H:i') }}
                                         </div>
                                         <h3 class="event-title">{{ event.name }}</h3>
                                         <div class="event-meta">
-                                            <p><i class="fas fa-users"></i> {{ event.maxParticipants }} participants max</p>
-                                            {% if event.organizer %}
-                                                <p><i class="fas fa-user"></i> Organisé par {{ event.organizer.email|split('@')[0] }}</p>
-                                            {% endif %}
+                                            <p>
+                                                <i class="fas fa-user"></i> 
+                                                {% if event.organizer %}
+                                                    {{ event.organizer.email }}
+                                                {% else %}
+                                                    Utilisateur inconnu
+                                                {% endif %}
+                                            </p>
+                                            <p>
+                                                <i class="fas fa-users"></i> 
+                                                {% if event.participants is defined %}
+                                                    {{ event.participants|length }}
+                                                {% else %}
+                                                    0
+                                                {% endif %}/{{ event.maxParticipants }} participants
+                                            </p>
                                         </div>
                                         <div class="event-description">
-                                            {{ event.description|slice(0, 150) }}...
+                                            {{ event.description|slice(0, 150) ~ '...' }}
                                         </div>
                                     </div>
                                     <div class="event-actions">
-                                        <a href="{{ path('app_event_show', {'id': event.id}) }}" class="btn btn-outline-primary">
-                                            <i class="fas fa-info-circle me-2"></i>Voir les détails
-                                        </a>
+                                        <div>
+                                            <a href="#" class="btn btn-primary">
+                                                <i class="fas fa-info-circle me-1"></i>Détails
+                                            </a>
+                                            {% if not event.isFull %}
+                                                <a href="#" class="btn btn-success">
+                                                    <i class="fas fa-user-plus me-1"></i>Rejoindre
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                        {% if is_granted('ROLE_USER') and app.user == event.organizer %}
+                                            <form method="post" action="{{ path('app_event_delete_html', {'id': event.id}) }}" 
+                                                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ?');" 
+                                                  style="display: inline-block;">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ event.id) }}">
+                                                <button type="submit" class="btn btn-delete">
+                                                    <i class="fas fa-trash-alt me-1"></i>Supprimer
+                                                </button>
+                                            </form>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
