@@ -31,12 +31,15 @@ final class GameFactory extends PersistentProxyObjectFactory
      */
     protected function defaults(): array|callable
     {
+        $jeuxSociete = ['Monopoly', 'UNO', 'Scrabble', 'Risk', 'Cluedo', 'Trivial Pursuit']; // les jeux de société possible
+        $types = ['board', 'card', 'duel']; //les Types de jeux possible sont board, card et duel
+        
         return [
-            'gameType' => self::faker()->text(255),
-            'isAvailable' => self::faker()->boolean(),
-            'maxPlayers' => self::faker()->randomNumber(),
-            'name' => self::faker()->text(255),
-            'owner' => UserFactory::new(),
+            'name' => self::faker()->randomElement($jeuxSociete),
+            'maxPlayers' => self::faker()->numberBetween(2, 6),
+            'gameType' => self::faker()->randomElement($types),
+            'isAvailable' => true,
+            'owner' => UserFactory::random()
         ];
     }
 

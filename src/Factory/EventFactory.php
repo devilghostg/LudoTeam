@@ -31,11 +31,13 @@ final class EventFactory extends PersistentProxyObjectFactory
      */
     protected function defaults(): array|callable
     {
+        $nomsSoirees = ['Soirée Jeux', 'Game Night', 'Tournoi', 'Après-midi ludique'];
+    
         return [
-            'date' => self::faker()->dateTime(),
-            'description' => self::faker()->text(),
-            'maxParticipants' => self::faker()->randomNumber(),
-            'name' => self::faker()->text(255),
+            'name' => self::faker()->randomElement($nomsSoirees) . ' #' . self::faker()->numberBetween(1, 10),
+            'date' => self::faker()->dateTimeBetween('now', '+1 month'),
+            'maxParticipants' => self::faker()->numberBetween(4, 8),
+            'organizer' => UserFactory::random()
         ];
     }
 
