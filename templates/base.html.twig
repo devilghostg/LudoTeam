@@ -145,6 +145,20 @@
         {% endblock %}
     </head>
     <body>
+        {% if app.user %}
+            <div class="position-fixed top-0 end-0 p-3" style="z-index: 1100">
+                <div class="toast show bg-primary text-white" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header bg-primary text-white">
+                        <i class="fas fa-user-circle me-2"></i>
+                        <strong class="me-auto">Bienvenue sur LudoTeam</strong>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        Bonjour {{ app.user.email|split('@')[0] }} ! Prêt à jouer ?
+                    </div>
+                </div>
+            </div>
+        {% endif %}
         <!-- Navigation Flottante -->
         <nav class="floating-nav collapsed">
             <ul class="nav flex-column">
@@ -204,29 +218,25 @@
                 document.addEventListener('DOMContentLoaded', function() {
                     const nav = document.querySelector('.floating-nav');
                     const links = nav.querySelectorAll('.nav-link');
-
-                    // Collapse nav when clicking outside
-                    document.addEventListener('click', function(e) {
-                        if (!nav.contains(e.target)) {
-                            nav.classList.add('collapsed');
-                        }
-                    });
-
-                    // Expand nav on hover
-                    nav.addEventListener('mouseenter', function() {
-                        nav.classList.remove('collapsed');
-                    });
-
-                    // Optional: Collapse nav when mouse leaves
-                    nav.addEventListener('mouseleave', function() {
-                        nav.classList.add('collapsed');
-                    });
-
-                    // Collapse nav after clicking a link
-                    links.forEach(link => {
-                        link.addEventListener('click', function() {
-                            nav.classList.add('collapsed');
+                    
+                    // Initialisation des toasts Bootstrap
+                    var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+                    var toastList = toastElList.map(function(toastEl) {
+                        return new bootstrap.Toast(toastEl, {
+                            autohide: true,
+                            delay: 5000
                         });
+                    });
+
+                    // Code de navigation existant...
+                    links.forEach(link => {
+                        link.addEventListener('mouseenter', () => {
+                            nav.classList.remove('collapsed');
+                        });
+                    });
+
+                    nav.addEventListener('mouseleave', () => {
+                        nav.classList.add('collapsed');
                     });
                 });
             </script>
