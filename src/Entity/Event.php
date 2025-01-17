@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\EventRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -16,15 +17,19 @@ class Event
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Assert\NotBlank] // verifier que le champ n'est pas vide
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[Assert\NotBlank] // vérifier que le champ n'est pas vide
+    #[Assert\Type("\DateTimeInterface")]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $date = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
+    #[Assert\Positive] // vérifier que la valeur est positive
     #[ORM\Column]
     private ?int $maxParticipants = null;
 

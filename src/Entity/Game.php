@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\GameRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -16,12 +17,15 @@ class Game
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Assert\NotBlank] // verifier que le champ n'est pas vide
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[Assert\Positive] // verifier que la valeur est positive
     #[ORM\Column]
     private ?int $maxPlayers = null;
 
+    #[Assert\Choice(choices: ['board', 'card', 'duel'])] // verifier que la valeur est dans la liste
     #[ORM\Column(length: 255)]
     private ?string $gameType = null;
 
