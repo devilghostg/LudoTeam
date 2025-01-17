@@ -240,4 +240,24 @@ final class EventController extends AbstractController
         $this->addFlash('success', 'Vous avez rejoint l\'événement avec succès !');
         return $this->redirectToRoute('app_event_index');
     }
+
+    #[Route('/{id}/leave', name: 'app_event_leave', methods: ['POST'])]
+    #[IsGranted('ROLE_USER')]
+    public function leave(Event $event): Response
+    {
+        $user = $this->getUser();
+
+        // Vérifier si l'utilisateur est participant
+        if (!$event->getParticipants()->contains($user)) {
+            $this->addFlash('error', 'Vous ne participez pas à cet événement !');
+            return $this->redirectToRoute('app_event_index');
+        }
+
+        // Retirer l'utilisateur des participants
+        $event->removeParticipant($user);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Vous avez quitté l\'événement avec succès !');
+        return $this->redirectToRoute('app_event_index');
+    }
 }

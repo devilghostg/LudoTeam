@@ -229,12 +229,20 @@
                                             <a href="{{ path('app_event_show', {'id': event.id}) }}" class="btn btn-primary">
                                                 <i class="fas fa-info-circle me-1"></i>Détails
                                             </a>
-                                            {% if not event.isFull and is_granted('ROLE_USER') and app.user != event.organizer %}
-                                                <form method="post" action="{{ path('app_event_join', {'id': event.id}) }}" style="display: inline-block;">
-                                                    <button type="submit" class="btn btn-success">
-                                                        <i class="fas fa-user-plus me-1"></i>Rejoindre
-                                                    </button>
-                                                </form>
+                                            {% if is_granted('ROLE_USER') and app.user != event.organizer %}
+                                                {% if event.participants.contains(app.user) %}
+                                                    <form method="post" action="{{ path('app_event_leave', {'id': event.id}) }}" style="display: inline-block;">
+                                                        <button type="submit" class="btn btn-warning">
+                                                            <i class="fas fa-sign-out-alt me-1"></i>Quitter
+                                                        </button>
+                                                    </form>
+                                                {% elseif not event.isFull %}
+                                                    <form method="post" action="{{ path('app_event_join', {'id': event.id}) }}" style="display: inline-block;">
+                                                        <button type="submit" class="btn btn-success">
+                                                            <i class="fas fa-user-plus me-1"></i>Rejoindre
+                                                        </button>
+                                                    </form>
+                                                {% endif %}
                                             {% endif %}
                                         </div>
                                         {% if is_granted('ROLE_USER') and app.user == event.organizer %}
