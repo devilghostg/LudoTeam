@@ -5,287 +5,184 @@
 {% block stylesheets %}
     {{ parent() }}
     <style>
-        .event-show-header {
+        .event-header {
             background: linear-gradient(135deg, #6B48FF 0%, #1E90FF 100%);
             padding: 60px 0;
             color: white;
             margin-bottom: 40px;
         }
 
-        .event-show-card {
+        .event-details {
             background: white;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-            overflow: hidden;
-        }
-
-        .event-show-info {
             padding: 30px;
-        }
-
-        .event-meta-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            padding: 25px;
             margin-bottom: 30px;
         }
 
-        .event-meta-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #eee;
+        .event-meta {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
         }
 
-        .event-meta-item:last-child {
-            margin-bottom: 0;
-            padding-bottom: 0;
-            border-bottom: none;
-        }
-
-        .event-meta-icon {
-            width: 45px;
-            height: 45px;
-            background: rgba(107, 72, 255, 0.1);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
-        }
-
-        .event-meta-icon i {
-            font-size: 1.2rem;
+        .event-meta i {
             color: #6B48FF;
+            width: 25px;
         }
 
-        .event-meta-content {
-            flex-grow: 1;
+        .event-description {
+            margin: 30px 0;
+            line-height: 1.6;
         }
 
-        .event-meta-label {
-            font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 5px;
+        .event-games {
+            margin: 30px 0;
         }
 
-        .event-meta-value {
-            font-size: 1.1rem;
-            color: #333;
-            font-weight: 500;
+        .game-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
         }
 
-        .participants-section {
-            margin-top: 30px;
-        }
-
-        .participant-avatar {
-            width: 40px;
-            height: 40px;
-            background: #6B48FF;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-
-        .participant-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 20px;
+        .participants-list {
+            margin: 30px 0;
         }
 
         .participant-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
-            background: #f8f9fa;
-            padding: 10px 15px;
-            border-radius: 25px;
         }
 
-        .btn-join-event {
-            background: linear-gradient(135deg, #6B48FF 0%, #1E90FF 100%);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 25px;
-            font-size: 1.1rem;
-            transition: transform 0.3s ease;
-        }
-
-        .btn-join-event:hover {
-            transform: translateY(-2px);
-            color: white;
-            box-shadow: 0 5px 15px rgba(107, 72, 255, 0.3);
-        }
-
-        .event-actions {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-        }
-
-        .games-list {
-            margin-top: 20px;
-        }
-
-        .game-badge {
-            display: inline-block;
-            background: rgba(107, 72, 255, 0.1);
-            color: #6B48FF;
-            padding: 8px 15px;
-            border-radius: 20px;
+        .participant-item i {
             margin-right: 10px;
-            margin-bottom: 10px;
+            color: #6B48FF;
+        }
+
+        .btn-join {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-join:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-back {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-back:hover {
+            background: #5a6268;
+            color: white;
+            text-decoration: none;
         }
     </style>
 {% endblock %}
 
 {% block body %}
-    <!-- Header Section -->
-    <section class="event-show-header full-width-section">
+    <section class="event-header">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-md-8">
-                    <h1 class="display-4 mb-3">{{ event.name }}</h1>
+                    <h1 class="display-4">{{ event.name }}</h1>
                     <p class="lead mb-0">
-                        <i class="fas fa-calendar-alt me-2"></i>
-                        {{ event.date ? event.date|date('d/m/Y H:i') : '' }}
+                        <i class="fas fa-calendar me-2"></i>{{ event.date|date('d/m/Y H:i') }}
                     </p>
                 </div>
                 <div class="col-md-4 text-md-end">
-                    {% if app.user %}
-                        <button class="btn btn-join-event">
-                            <i class="fas fa-user-plus me-2"></i>Rejoindre l'événement
-                        </button>
-                    {% endif %}
+                    <a href="{{ path('app_event_index') }}" class="btn btn-back">
+                        <i class="fas fa-arrow-left me-2"></i>Retour aux événements
+                    </a>
                 </div>
             </div>
         </div>
     </section>
 
     <div class="container">
-        <div class="row">
-            <!-- Informations principales -->
-            <div class="col-md-8">
-                <div class="event-show-card">
-                    <div class="event-show-info">
-                        <h2 class="mb-4">À propos de l'événement</h2>
-                        <div class="event-description mb-4">
-                            {{ event.description|nl2br }}
-                        </div>
-
-                        <div class="games-list">
-                            <h3 class="h5 mb-3">Jeux prévus</h3>
-                            {% if event.games is not empty %}
-                                {% for game in event.games %}
-                                    <span class="game-badge">
-                                        <i class="fas fa-dice me-2"></i>{{ game.name }}
-                                    </span>
-                                {% endfor %}
-                            {% else %}
-                                <p class="text-muted">Aucun jeu n'a encore été sélectionné</p>
-                            {% endif %}
-                        </div>
-
-                        {% if is_granted('ROLE_USER') and event.organizer == app.user %}
-                            <div class="event-actions">
-                                <a href="{{ path('app_event_edit', {'id': event.id}) }}" class="btn btn-outline-primary">
-                                    <i class="fas fa-edit me-2"></i>Modifier
-                                </a>
-                                {{ include('event/_delete_form.html.twig') }}
-                            </div>
+        <div class="event-details">
+            <div class="event-meta">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><i class="fas fa-user me-2"></i>Organisé par : {{ event.organizer ? event.organizer.email : 'Utilisateur inconnu' }}</p>
+                        <p><i class="fas fa-users me-2"></i>Participants : {{ event.participants|length }}/{{ event.maxParticipants }}</p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        {% if not event.isFull and is_granted('ROLE_USER') and app.user != event.organizer and not event.participants.contains(app.user) %}
+                            <form method="post" action="{{ path('app_event_join', {'id': event.id}) }}" style="display: inline-block;">
+                                <button type="submit" class="btn btn-join">
+                                    <i class="fas fa-user-plus me-2"></i>Rejoindre l'événement
+                                </button>
+                            </form>
                         {% endif %}
                     </div>
                 </div>
+            </div>
 
-                <!-- Section Participants -->
-                <div class="participants-section">
-                    <h2 class="mb-4">Participants ({{ event.participants|length }}/{{ event.maxParticipants }})</h2>
-                    <div class="participant-list">
-                        {% if event.participants is not empty %}
-                            {% for participant in event.participants %}
-                                <div class="participant-item">
-                                    <div class="participant-avatar">
-                                        {{ participant.email|split('@')[0]|first|upper }}
-                                    </div>
-                                    {{ participant.email|split('@')[0] }}
+            <div class="event-description">
+                <h3>Description</h3>
+                <p>{{ event.description|nl2br }}</p>
+            </div>
+
+            <div class="event-games">
+                <h3>Jeux prévus</h3>
+                {% if event.games|length > 0 %}
+                    <div class="row">
+                        {% for game in event.games %}
+                            <div class="col-md-6">
+                                <div class="game-item">
+                                    <h5>{{ game.name }}</h5>
+                                    <p class="mb-0">
+                                        <small>
+                                            <i class="fas fa-users me-2"></i>{{ game.minPlayers }}-{{ game.maxPlayers }} joueurs
+                                        </small>
+                                    </p>
                                 </div>
-                            {% endfor %}
-                        {% else %}
-                            <p class="text-muted">Aucun participant pour le moment</p>
-                        {% endif %}
-                    </div>
-                </div>
-
-            <!-- Sidebar avec métadonnées -->
-            <div class="col-md-4">
-                <div class="event-meta-card">
-                    <div class="event-meta-item">
-                        <div class="event-meta-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="event-meta-content">
-                            <div class="event-meta-label">Participants maximum</div>
-                            <div class="event-meta-value">{{ event.maxParticipants }} personnes</div>
-                        </div>
-                    </div>
-
-                    <div class="event-meta-item">
-                        <div class="event-meta-icon">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div class="event-meta-content">
-                            <div class="event-meta-label">Organisateur</div>
-                            <div class="event-meta-value">
-                                {% if event.organizer %}
-                                    {{ event.organizer.email|split('@')[0] }}
-                                {% else %}
-                                    <span class="text-muted">Non spécifié</span>
-                                {% endif %}
                             </div>
-                        </div>
+                        {% endfor %}
                     </div>
+                {% else %}
+                    <p class="text-muted">Aucun jeu n'a été spécifié pour cet événement.</p>
+                {% endif %}
+            </div>
 
-                    <div class="event-meta-item">
-                        <div class="event-meta-icon">
-                            <i class="fas fa-calendar-day"></i>
-                        </div>
-                        <div class="event-meta-content">
-                            <div class="event-meta-label">Date</div>
-                            <div class="event-meta-value">{{ event.date ? event.date|date('d/m/Y') : '' }}</div>
-                        </div>
+            <div class="participants-list">
+                <h3>Participants ({{ event.participants|length }}/{{ event.maxParticipants }})</h3>
+                {% if event.participants|length > 0 %}
+                    <div class="row">
+                        {% for participant in event.participants %}
+                            <div class="col-md-6">
+                                <div class="participant-item">
+                                    <i class="fas fa-user"></i>
+                                    {{ participant.email }}
+                                    {% if participant == event.organizer %}
+                                        <span class="badge bg-primary ms-2">Organisateur</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
                     </div>
-
-                    <div class="event-meta-item">
-                        <div class="event-meta-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="event-meta-content">
-                            <div class="event-meta-label">Heure</div>
-                            <div class="event-meta-value">{{ event.date ? event.date|date('H:i') : '' }}</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="event-meta-card">
-                    <h3 class="h5 mb-3">Partager l'événement</h3>
-                    <div class="d-flex gap-2">
-                        <a href="#" class="btn btn-outline-primary flex-grow-1">
-                            <i class="fab fa-facebook-f me-2"></i>Facebook
-                        </a>
-                        <a href="#" class="btn btn-outline-info flex-grow-1">
-                            <i class="fab fa-twitter me-2"></i>Twitter
-                        </a>
-                    </div>
-                </div>
+                {% else %}
+                    <p class="text-muted">Aucun participant pour le moment.</p>
+                {% endif %}
             </div>
         </div>
     </div>
