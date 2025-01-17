@@ -2,6 +2,115 @@
 
 {% block title %}Jeux - LudoTeam{% endblock %}
 
+{% block body %}
+    <!-- Header Section -->
+    <section class="game-header full-width-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-4 mb-3">Jeux de société</h1>
+                    <p class="lead mb-0">Découvrez notre collection de jeux</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    {% if app.user %}
+                        <a href="{{ path('app_game_new') }}" class="btn btn-create-game">
+                            <i class="fas fa-plus-circle me-2"></i>Ajouter un jeu
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="row">
+            <!-- Filtres -->
+            <div class="col-md-3">
+                <div class="game-filter">
+                    <h4 class="filter-title">Filtres</h4>
+                    <form action="{{ path('app_game_index') }}" method="get" id="filterForm">
+                        <div class="mb-3">
+                            <label class="form-label">Recherche</label>
+                            <input type="text" name="search" class="form-control" value="{{ app.request.query.get('search') }}" placeholder="Nom du jeu...">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Disponibilité</label>
+                            <select class="form-select" name="availability" onchange="this.form.submit()">
+                                <option value="">Tous</option>
+                                <option value="available" {% if app.request.query.get('availability') == 'available' %}selected{% endif %}>Disponible</option>
+                                <option value="unavailable" {% if app.request.query.get('availability') == 'unavailable' %}selected{% endif %}>Non disponible</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Nombre de joueurs minimum</label>
+                            <input type="number" name="min_players" class="form-control" value="{{ app.request.query.get('min_players') }}" min="1">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Nombre de joueurs maximum</label>
+                            <input type="number" name="max_players" class="form-control" value="{{ app.request.query.get('max_players') }}" min="1">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Appliquer les filtres</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Liste des jeux -->
+            <div class="col-md-9">
+                {% if games is empty %}
+                    <div class="empty-state">
+                        <i class="fas fa-dice"></i>
+                        <h3>Aucun jeu trouvé</h3>
+                        <p class="text-muted">Modifiez vos filtres ou ajoutez un nouveau jeu</p>
+                        {% if app.user %}
+                            <a href="{{ path('app_game_new') }}" class="btn btn-create-game mt-3">
+                                <i class="fas fa-plus-circle me-2"></i>Ajouter un jeu
+                            </a>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div class="row">
+                        {% for game in games %}
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="game-card">
+                                    <div class="game-image">
+                                        <i class="fas fa-dice"></i>
+                                    </div>
+                                    <div class="game-info">
+                                        <h3 class="game-title">{{ game.name }}</h3>
+                                        <div class="game-meta">
+                                            <p><i class="fas fa-users"></i> {{ game.minPlayers }} - {{ game.maxPlayers }} joueurs</p>
+                                            <p><i class="fas fa-clock"></i> {{ game.duration }} minutes</p>
+                                            {% if game.owner %}
+                                                <p><i class="fas fa-user"></i> Ajouté par {{ game.owner.email|split('@')[0] }}</p>
+                                            {% endif %}
+                                        </div>
+                                        <div class="game-availability">
+                                            {% if game.isAvailable %}
+                                                <span class="badge bg-success">Disponible</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">Non disponible</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="game-actions">
+                                        <a href="{{ path('app_game_show', {'id': game.id}) }}" class="btn btn-outline-primary">
+                                            <i class="fas fa-info-circle me-2"></i>Voir les détails
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
 {% block stylesheets %}
     {{ parent() }}
     <style>
@@ -10,6 +119,20 @@
             padding: 60px 0;
             color: white;
             margin-bottom: 40px;
+        }
+
+        .game-filter {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #333;
         }
 
         .game-card {
@@ -66,13 +189,7 @@
             color: #6B48FF;
         }
 
-        .game-type {
-            display: inline-block;
-            padding: 5px 12px;
-            background: rgba(107, 72, 255, 0.1);
-            color: #6B48FF;
-            border-radius: 20px;
-            font-size: 0.85rem;
+        .game-availability {
             margin-bottom: 15px;
         }
 
@@ -80,7 +197,6 @@
             padding: 15px 20px;
             background: #f8f9fa;
             border-top: 1px solid #eee;
-            margin-top: auto;
         }
 
         .btn-create-game {
@@ -98,20 +214,6 @@
             box-shadow: 0 5px 15px rgba(107, 72, 255, 0.3);
         }
 
-        .game-filter {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .filter-title {
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            color: #333;
-        }
-
         .empty-state {
             text-align: center;
             padding: 40px 20px;
@@ -126,97 +228,4 @@
             margin-bottom: 20px;
         }
     </style>
-{% endblock %}
-
-{% block body %}
-    <!-- Header Section -->
-    <section class="game-header full-width-section">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <h1 class="display-4 mb-3">Jeux</h1>
-                    <p class="lead mb-0">Découvrez notre collection de jeux de société</p>
-                </div>
-                <div class="col-md-4 text-md-end">
-                    {% if app.user %}
-                        <a href="{{ path('app_game_new') }}" class="btn btn-create-game">
-                            <i class="fas fa-plus-circle me-2"></i>Ajouter un jeu
-                        </a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <div class="container">
-        <div class="row">
-            <!-- Filtres -->
-            <div class="col-md-3">
-                <div class="game-filter">
-                    <h4 class="filter-title">Filtres</h4>
-                    <div class="mb-3">
-                        <label class="form-label">Type de jeu</label>
-                        <select class="form-select">
-                            <option>Tous</option>
-                            <option>Stratégie</option>
-                            <option>Famille</option>
-                            <option>Cartes</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Nombre de joueurs</label>
-                        <select class="form-select">
-                            <option>Tous</option>
-                            <option>2 joueurs</option>
-                            <option>3-4 joueurs</option>
-                            <option>5+ joueurs</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Liste des jeux -->
-            <div class="col-md-9">
-                {% if games is empty %}
-                    <div class="empty-state">
-                        <i class="fas fa-dice"></i>
-                        <h3>Aucun jeu disponible</h3>
-                        <p class="text-muted">Soyez le premier à ajouter un jeu !</p>
-                        {% if app.user %}
-                            <a href="{{ path('app_game_new') }}" class="btn btn-create-game mt-3">
-                                <i class="fas fa-plus-circle me-2"></i>Ajouter un jeu
-                            </a>
-                        {% endif %}
-                    </div>
-                {% else %}
-                    <div class="row">
-                        {% for game in games %}
-                            <div class="col-md-4">
-                                <div class="game-card">
-                                    <div class="game-image">
-                                        <i class="fas fa-dice-d20"></i>
-                                    </div>
-                                    <div class="game-info">
-                                        <h3 class="game-title">{{ game.name }}</h3>
-                                        <div class="game-type">
-                                            {{ game.gameType }}
-                                        </div>
-                                        <div class="game-meta">
-                                            <p><i class="fas fa-users"></i> {{ game.maxPlayers }} joueurs max</p>
-                                            <p><i class="fas fa-clock"></i> {{ game.duration ?? '30-60' }} minutes</p>
-                                        </div>
-                                    </div>
-                                    <div class="game-actions">
-                                        <a href="{{ path('app_game_show', {'id': game.id}) }}" class="btn btn-outline-primary w-100">
-                                            <i class="fas fa-info-circle me-2"></i>Voir les détails
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
 {% endblock %}

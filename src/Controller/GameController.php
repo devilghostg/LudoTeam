@@ -25,15 +25,53 @@ final class GameController extends AbstractController
     #[Route('/', name: 'app_game_index', methods: ['GET'])]
     public function index(Request $request, GameRepository $gameRepository): Response
     {
+        // Récupérer les filtres
+        $availability = $request->query->get('availability');
+        $minPlayers = $request->query->get('min_players');
+        $maxPlayers = $request->query->get('max_players');
+        $searchTerm = $request->query->get('search');
+
+        // Créer la requête de base
+        $qb = $gameRepository->createQueryBuilder('g');
+
+        // Filtre par disponibilité
+        if ($availability) {
+            if ($availability === 'available') {
+                $qb->andWhere('g.isAvailable = :available')
+                   ->setParameter('available', true);
+            } elseif ($availability === 'unavailable') {
+                $qb->andWhere('g.isAvailable = :available')
+                   ->setParameter('available', false);
+            }
+        }
+
+        // Filtre par nombre de joueurs
+        if ($minPlayers) {
+            $qb->andWhere('g.minPlayers >= :minPlayers')
+               ->setParameter('minPlayers', $minPlayers);
+        }
+        if ($maxPlayers) {
+            $qb->andWhere('g.maxPlayers <= :maxPlayers')
+               ->setParameter('maxPlayers', $maxPlayers);
+        }
+
+        // Recherche par nom ou description
+        if ($searchTerm) {
+            $qb->andWhere('g.name LIKE :search OR g.description LIKE :search')
+               ->setParameter('search', '%'.$searchTerm.'%');
+        }
+
+        // Exécuter la requête
+        $games = $qb->getQuery()->getResult();
+
         // Si on demande du JSON
         if ($request->headers->get('Accept') === 'application/json') {
-            $games = $gameRepository->findAll();
             return $this->json($games, 200, [], ['groups' => 'game:read']);
         }
 
         // Sinon on renvoie du HTML
         return $this->render('game/index.html.twig', [
-            'games' => $gameRepository->findAll(),
+            'games' => $games,
         ]);
     }
 

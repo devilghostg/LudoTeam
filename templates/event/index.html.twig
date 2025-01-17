@@ -140,20 +140,38 @@
             <div class="col-md-3">
                 <div class="event-filter">
                     <h4 class="filter-title">Filtres</h4>
-                    <div class="mb-3">
-                        <label class="form-label">Date</label>
-                        <select class="form-select">
-                            <option>Tous</option>
-                            <option>Cette semaine</option>
-                            <option>Ce mois</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Jeux</label>
-                        <select class="form-select">
-                            <option>Tous les jeux</option>
-                        </select>
-                    </div>
+                    <form action="{{ path('app_event_index') }}" method="get" id="filterForm">
+                        <div class="mb-3">
+                            <label class="form-label">Date</label>
+                            <select class="form-select" name="date_filter" onchange="this.form.submit()">
+                                <option value="">Tous</option>
+                                <option value="today" {% if app.request.query.get('date_filter') == 'today' %}selected{% endif %}>Aujourd'hui</option>
+                                <option value="week" {% if app.request.query.get('date_filter') == 'week' %}selected{% endif %}>Cette semaine</option>
+                                <option value="month" {% if app.request.query.get('date_filter') == 'month' %}selected{% endif %}>Ce mois</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Places disponibles</label>
+                            <select class="form-select" name="availability" onchange="this.form.submit()">
+                                <option value="">Tous</option>
+                                <option value="available" {% if app.request.query.get('availability') == 'available' %}selected{% endif %}>Places disponibles</option>
+                                <option value="full" {% if app.request.query.get('availability') == 'full' %}selected{% endif %}>Complet</option>
+                            </select>
+                        </div>
+                        {% if games is defined %}
+                        <div class="mb-3">
+                            <label class="form-label">Jeux</label>
+                            <select class="form-select" name="game" onchange="this.form.submit()">
+                                <option value="">Tous les jeux</option>
+                                {% for game in games %}
+                                    <option value="{{ game.id }}" {% if app.request.query.get('game') == (game.id ~ '') %}selected{% endif %}>
+                                        {{ game.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% endif %}
+                    </form>
                 </div>
             </div>
 
@@ -183,7 +201,7 @@
                                         <div class="event-meta">
                                             <p><i class="fas fa-users"></i> {{ event.maxParticipants }} participants max</p>
                                             {% if event.organizer %}
-                                                <p><i class="fas fa-user"></i> Organisé par {{ event.organizer.email }}</p>
+                                                <p><i class="fas fa-user"></i> Organisé par {{ event.organizer.email|split('@')[0] }}</p>
                                             {% endif %}
                                         </div>
                                         <div class="event-description">
