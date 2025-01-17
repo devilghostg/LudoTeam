@@ -37,7 +37,8 @@ final class EventFactory extends PersistentProxyObjectFactory
             'name' => self::faker()->randomElement($nomsSoirees) . ' #' . self::faker()->numberBetween(1, 10),
             'date' => self::faker()->dateTimeBetween('now', '+1 month'),
             'maxParticipants' => self::faker()->numberBetween(4, 8),
-            'organizer' => UserFactory::random()
+            'organizer' => UserFactory::random(),
+            'description' => self::faker()->text(200)
         ];
     }
 

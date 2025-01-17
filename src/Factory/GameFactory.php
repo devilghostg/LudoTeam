@@ -39,6 +39,7 @@ final class GameFactory extends PersistentProxyObjectFactory
             'maxPlayers' => self::faker()->numberBetween(2, 6),
             'gameType' => self::faker()->randomElement($types),
             'isAvailable' => true,
+            'description' => self::faker()->text(200),
             'owner' => UserFactory::random()
         ];
     }
