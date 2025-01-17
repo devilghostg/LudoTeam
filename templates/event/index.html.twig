@@ -6,6 +6,12 @@
     <div class="container mt-4">
         <h1>Liste des événements</h1>
 
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+        {% endfor %}
+
         <a href="{{ path('app_event_new') }}" class="btn btn-primary mb-3">Créer un événement</a>
 
         <div class="row">
@@ -17,12 +23,22 @@
                             <p class="card-text">
                                 <strong>Date:</strong> {{ event.date ? event.date|date('Y-m-d H:i') : '' }}<br>
                                 <strong>Participants max:</strong> {{ event.maxParticipants }}<br>
-                                <strong>Description:</strong> {{ event.description }}
+                                <strong>Description:</strong> {{ event.description|slice(0, 100) }}...
                             </p>
-                            <a href="{{ path('app_event_show', {'id': event.id}) }}" class="btn btn-info">Voir</a>
-                            {% if app.user == event.organizer %}
-                                <a href="{{ path('app_event_edit', {'id': event.id}) }}" class="btn btn-warning">Modifier</a>
-                            {% endif %}
+                            <div class="d-flex justify-content-between">
+                                <a href="{{ path('app_event_show', {'id': event.id}) }}" class="btn btn-info">Voir</a>
+                                {% if app.user == event.organizer %}
+                                    <div>
+                                        <a href="{{ path('app_event_edit', {'id': event.id}) }}" class="btn btn-warning">Modifier</a>
+                                        <form method="post" action="{{ path('app_event_delete', {'id': event.id}) }}" 
+                                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ?');" 
+                                              style="display: inline-block">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ event.id) }}">
+                                            <button class="btn btn-danger">Supprimer</button>
+                                        </form>
+                                    </div>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>

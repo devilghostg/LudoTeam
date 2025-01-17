@@ -69,6 +69,7 @@ final class EventController extends AbstractController
             $this->entityManager->persist($event);
             $this->entityManager->flush();
 
+            $this->addFlash('success', 'Événement créé avec succès !');
             return $this->redirectToRoute('app_event_index');
         }
 
@@ -118,6 +119,7 @@ final class EventController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->entityManager->flush();
 
+            $this->addFlash('success', 'Événement modifié avec succès !');
             return $this->redirectToRoute('app_event_index');
         }
 
@@ -127,7 +129,7 @@ final class EventController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_event_delete', methods: ['DELETE'])]
+    #[Route('/{id}', name: 'app_event_delete', methods: ['DELETE', 'POST'])]
     public function delete(Request $request, Event $event): Response
     {
         if ($event->getOrganizer() !== $this->getUser()) {
@@ -146,8 +148,56 @@ final class EventController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$event->getId(), $request->request->get('_token'))) {
             $this->entityManager->remove($event);
             $this->entityManager->flush();
+            $this->addFlash('success', 'Événement supprimé avec succès !');
         }
 
         return $this->redirectToRoute('app_event_index');
+    }
+
+    #[Route('/{id}/join', name: 'app_event_join', methods: ['POST'])]
+    public function join(Request $request, Event $event): Response
+    {
+        if (!$this->isCsrfTokenValid('join'.$event->getId(), $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
+
+        $user = $this->getUser();
+        if (!$user) {
+            throw $this->createAccessDeniedException('Vous devez être connecté pour participer à un événement.');
+        }
+
+        if (count($event->getParticipants()) >= $event->getMaxParticipants()) {
+            $this->addFlash('error', 'Désolé, l\'événement est complet !');
+            return $this->redirectToRoute('app_event_show', ['id' => $event->getId()]);
+        }
+
+        if (!$event->getParticipants()->contains($user)) {
+            $event->addParticipant($user);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Vous participez maintenant à cet événement !');
+        }
+
+        return $this->redirectToRoute('app_event_show', ['id' => $event->getId()]);
+    }
+
+    #[Route('/{id}/leave', name: 'app_event_leave', methods: ['POST'])]
+    public function leave(Request $request, Event $event): Response
+    {
+        if (!$this->isCsrfTokenValid('leave'.$event->getId(), $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
+
+        $user = $this->getUser();
+        if (!$user) {
+            throw $this->createAccessDeniedException('Vous devez être connecté pour quitter un événement.');
+        }
+
+        if ($event->getParticipants()->contains($user)) {
+            $event->removeParticipant($user);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Vous ne participez plus à cet événement.');
+        }
+
+        return $this->redirectToRoute('app_event_show', ['id' => $event->getId()]);
     }
 }

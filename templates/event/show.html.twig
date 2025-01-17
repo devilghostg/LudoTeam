@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de l'événement{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card">
+                    <div class="card-body">
+                        <h1 class="card-title mb-4">{{ event.name }}</h1>
+
+                        <div class="mb-4">
+                            <h5 class="text-muted">Détails de l'événement</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Date:</strong> {{ event.date|date('d/m/Y H:i') }}</p>
+                                    <p><strong>Participants maximum:</strong> {{ event.maxParticipants }}</p>
+                                    <p><strong>Organisateur:</strong> {{ event.organizer.email }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Participants actuels:</strong> {{ event.participants|length }}</p>
+                                    <p><strong>Places restantes:</strong> {{ event.maxParticipants - event.participants|length }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5 class="text-muted">Description</h5>
+                            <p>{{ event.description }}</p>
+                        </div>
+
+                        {% if event.participants|length > 0 %}
+                            <div class="mb-4">
+                                <h5 class="text-muted">Participants</h5>
+                                <ul class="list-group">
+                                    {% for participant in event.participants %}
+                                        <li class="list-group-item">{{ participant.email }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ path('app_event_index') }}" class="btn btn-secondary">Retour à la liste</a>
+                            
+                            <div>
+                                {% if app.user == event.organizer %}
+                                    <a href="{{ path('app_event_edit', {'id': event.id}) }}" class="btn btn-warning">Modifier</a>
+                                    <form method="post" action="{{ path('app_event_delete', {'id': event.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ?');" style="display: inline-block">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ event.id) }}">
+                                        <button class="btn btn-danger">Supprimer</button>
+                                    </form>
+                                {% else %}
+                                    {% if app.user in event.participants %}
+                                        <form method="post" action="{{ path('app_event_leave', {'id': event.id}) }}" style="display: inline-block">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('leave' ~ event.id) }}">
+                                            <button class="btn btn-warning">Se désinscrire</button>
+                                        </form>
+                                    {% else %}
+                                        <form method="post" action="{{ path('app_event_join', {'id': event.id}) }}" style="display: inline-block">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('join' ~ event.id) }}">
+                                            <button class="btn btn-success" {{ event.participants|length >= event.maxParticipants ? 'disabled' : '' }}>
+                                                Participer
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

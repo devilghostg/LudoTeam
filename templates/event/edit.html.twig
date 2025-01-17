@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier l'événement{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <h1 class="mb-4">Modifier l'événement</h1>
+
+                {% for message in app.flashes('success') %}
+                    <div class="alert alert-success">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+
+                {{ form_start(form, {'attr': {'class': 'needs-validation'}}) }}
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="mb-3">
+                                {{ form_label(form.name, 'Nom de l\'événement') }}
+                                {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.name) }}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form_label(form.date, 'Date') }}
+                                {{ form_widget(form.date, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.date) }}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form_label(form.maxParticipants, 'Nombre maximum de participants') }}
+                                {{ form_widget(form.maxParticipants, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.maxParticipants) }}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form_label(form.description, 'Description') }}
+                                {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 4}}) }}
+                                {{ form_errors(form.description) }}
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <a href="{{ path('app_event_index') }}" class="btn btn-secondary">Retour à la liste</a>
+                                <div>
+                                    <form method="post" action="{{ path('app_event_delete', {'id': event.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ?');" style="display: inline-block">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ event.id) }}">
+                                        <button class="btn btn-danger">Supprimer</button>
+                                    </form>
+                                    <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

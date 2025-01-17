@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un nouvel événement{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <h1 class="mb-4">Créer un nouvel événement</h1>
+
+                {% for message in app.flashes('success') %}
+                    <div class="alert alert-success">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+
+                {{ form_start(form, {'attr': {'class': 'needs-validation'}}) }}
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="mb-3">
+                                {{ form_label(form.name, 'Nom de l\'événement') }}
+                                {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.name) }}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form_label(form.date, 'Date') }}
+                                {{ form_widget(form.date, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.date) }}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form_label(form.maxParticipants, 'Nombre maximum de participants') }}
+                                {{ form_widget(form.maxParticipants, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.maxParticipants) }}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form_label(form.description, 'Description') }}
+                                {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 4}}) }}
+                                {{ form_errors(form.description) }}
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <a href="{{ path('app_event_index') }}" class="btn btn-secondary">Retour à la liste</a>
+                                <button type="submit" class="btn btn-primary">Créer l'événement</button>
+                            </div>
+                        </div>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
