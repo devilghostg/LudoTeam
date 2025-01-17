@@ -6,14 +6,199 @@
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
         {% block stylesheets %}
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-        {% endblock %}
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+            <style>
+                .floating-nav {
+                    position: fixed;
+                    left: 20px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    background: rgba(255, 255, 255, 0.95);
+                    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+                    backdrop-filter: blur(8px);
+                    border-radius: 20px;
+                    padding: 20px 15px;
+                    z-index: 1000;
+                    transition: all 0.3s ease;
+                }
 
-        {% block javascripts %}
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+                .floating-nav:hover {
+                    transform: translateY(-50%) scale(1.02);
+                    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.25);
+                }
+
+                .floating-nav .nav-item {
+                    margin: 10px 0;
+                }
+
+                .floating-nav .nav-link {
+                    color: #333;
+                    padding: 10px;
+                    border-radius: 15px;
+                    text-align: center;
+                    transition: all 0.3s ease;
+                    position: relative;
+                    display: flex;
+                    align-items: center;
+                    width: 45px;
+                    overflow: hidden;
+                }
+
+                .floating-nav .nav-link:hover,
+                .floating-nav .nav-link.active {
+                    width: 140px;
+                    background: linear-gradient(135deg, #6B48FF 0%, #1E90FF 100%);
+                    color: white;
+                }
+
+                .floating-nav.collapsed .nav-link:hover {
+                    width: 45px;
+                }
+
+                .floating-nav .nav-link i {
+                    font-size: 1.2rem;
+                    min-width: 25px;
+                    color: inherit;
+                }
+
+                .floating-nav .nav-link span {
+                    margin-left: 10px;
+                    white-space: nowrap;
+                    opacity: 0;
+                    transition: opacity 0.3s ease;
+                    color: inherit;
+                }
+
+                .floating-nav:not(.collapsed) .nav-link:hover span,
+                .floating-nav:not(.collapsed) .nav-link.active span {
+                    opacity: 1;
+                }
+
+                .floating-nav.collapsed .nav-link:hover span {
+                    opacity: 0;
+                }
+
+                .floating-nav .nav-link.active {
+                    background: linear-gradient(135deg, #6B48FF 0%, #1E90FF 100%);
+                    color: white;
+                }
+
+                .floating-nav.collapsed .nav-link.active {
+                    width: 45px;
+                    background: linear-gradient(135deg, #6B48FF 0%, #1E90FF 100%);
+                    color: white;
+                }
+
+                .floating-nav.collapsed .nav-link.active span {
+                    opacity: 0;
+                }
+
+                @media (max-width: 768px) {
+                    .floating-nav {
+                        left: 10px;
+                        padding: 15px 10px;
+                    }
+
+                    .floating-nav .nav-link {
+                        width: 40px;
+                    }
+
+                    .floating-nav .nav-link:hover,
+                    .floating-nav .nav-link.active {
+                        width: 120px;
+                    }
+
+                    .floating-nav.collapsed .nav-link:hover,
+                    .floating-nav.collapsed .nav-link.active {
+                        width: 40px;
+                    }
+                }
+
+                .notification-badge {
+                    position: absolute;
+                    top: -5px;
+                    right: -5px;
+                    background: #FF4B4B;
+                    color: white;
+                    border-radius: 50%;
+                    width: 20px;
+                    height: 20px;
+                    font-size: 0.8rem;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    animation: pulse 2s infinite;
+                }
+
+                @keyframes pulse {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.2); }
+                    100% { transform: scale(1); }
+                }
+
+                .main-content {
+                    margin-left: 0;
+                    width: 100%;
+                }
+            </style>
         {% endblock %}
     </head>
     <body>
+        <!-- Navigation Flottante -->
+        <nav class="floating-nav collapsed">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link {% if app.request.get('_route') == 'app_home' %}active{% endif %}" 
+                       href="{{ path('app_home') }}">
+                        <i class="fas fa-home"></i>
+                        <span>Accueil</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if app.request.get('_route') starts with 'app_event' %}active{% endif %}" 
+                       href="{{ path('app_event_index') }}">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Événements</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if app.request.get('_route') starts with 'app_game' %}active{% endif %}" 
+                       href="{{ path('app_game_index') }}">
+                        <i class="fas fa-dice"></i>
+                        <span>Jeux</span>
+                    </a>
+                </li>
+                {% if app.user %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_event_new') }}">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Créer</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-user"></i>
+                            <span>Profil</span>
+                            <div class="notification-badge">2</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_logout') }}">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Déconnexion</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_login') }}">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Connexion</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+
         {% if app.user %}
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
                 <div class="container">
@@ -46,14 +231,56 @@
             </nav>
         {% endif %}
 
-        <main class="container mt-4">
-            {% block body %}{% endblock %}
-        </main>
+        <!-- Contenu Principal -->
+        <div class="main-content">
+            <main class="container mt-4">
+                {% block body %}{% endblock %}
+            </main>
+        </div>
 
         <footer class="bg-light mt-5 py-3">
             <div class="container text-center">
                 <p class="text-muted mb-0">&copy; {{ "now"|date("Y") }} LudoTeam. Tous droits réservés.</p>
             </div>
         </footer>
+
+        {% block javascripts %}
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const nav = document.querySelector('.floating-nav');
+                    const links = nav.querySelectorAll('.nav-link');
+
+                    // Fonction pour fermer la nav
+                    function collapseNav() {
+                        nav.classList.add('collapsed');
+                    }
+
+                    // Fonction pour ouvrir la nav
+                    function expandNav() {
+                        nav.classList.remove('collapsed');
+                    }
+
+                    // Ajouter les événements de clic sur les liens
+                    links.forEach(link => {
+                        link.addEventListener('click', () => {
+                            // Si ce n'est pas un lien externe (comme le profil), fermer la nav
+                            if (link.getAttribute('href') !== '#') {
+                                collapseNav();
+                            }
+                        });
+                    });
+
+                    // Ouvrir la nav au survol
+                    nav.addEventListener('mouseenter', expandNav);
+                    
+                    // Fermer la nav quand la souris quitte la nav
+                    nav.addEventListener('mouseleave', collapseNav);
+
+                    // Fermer la nav au chargement initial
+                    collapseNav();
+                });
+            </script>
+        {% endblock %}
     </body>
 </html>
