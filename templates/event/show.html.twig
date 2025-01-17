@@ -214,9 +214,9 @@
                             {% for participant in event.participants %}
                                 <div class="participant-item">
                                     <div class="participant-avatar">
-                                        {{ participant.email|first|upper }}
+                                        {{ participant.email|split('@')[0]|first|upper }}
                                     </div>
-                                    {{ participant.email }}
+                                    {{ participant.email|split('@')[0] }}
                                 </div>
                             {% endfor %}
                         {% else %}
@@ -224,7 +224,6 @@
                         {% endif %}
                     </div>
                 </div>
-            </div>
 
             <!-- Sidebar avec métadonnées -->
             <div class="col-md-4">
@@ -245,7 +244,13 @@
                         </div>
                         <div class="event-meta-content">
                             <div class="event-meta-label">Organisateur</div>
-                            <div class="event-meta-value">{{ event.organizer.email }}</div>
+                            <div class="event-meta-value">
+                                {% if event.organizer %}
+                                    {{ event.organizer.email|split('@')[0] }}
+                                {% else %}
+                                    <span class="text-muted">Non spécifié</span>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
 
