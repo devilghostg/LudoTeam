@@ -2,18 +2,19 @@
 
 namespace App\Controller;
 
-use App\Repository\GameRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
 use App\Entity\Event;
 use App\Form\EventType;
+use App\Repository\GameRepository;
 use App\Repository\EventRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/event')]
 final class EventController extends AbstractController
@@ -95,10 +96,33 @@ final class EventController extends AbstractController
         // 7. Récupérer tous les jeux pour le filtre
         $games = $gameRepository->findAll();
 
-        // 8. Rendre la vue avec les résultats
         return $this->render('event/index.html.twig', [
             'events' => $events,
             'games' => $games,
+        ]);
+    }
+
+    #[Route('/new', name: 'app_event_new', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_USER')]
+    public function new(Request $request): Response
+    {
+        $event = new Event();
+        $event->setOrganizer($this->getUser());
+        
+        $form = $this->createForm(EventType::class, $event);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->persist($event);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'L\'événement a été créé avec succès !');
+            return $this->redirectToRoute('app_event_index');
+        }
+
+        return $this->render('event/new.html.twig', [
+            'event' => $event,
+            'form' => $form,
         ]);
     }
 

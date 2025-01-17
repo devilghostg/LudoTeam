@@ -10,34 +10,51 @@
             <p class="text-muted">Rejoignez la communauté LudoTeam</p>
         </div>
 
+        {% for flash_error in app.flashes('error') %}
+            <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+        {% endfor %}
+
+        {% for flash_success in app.flashes('success') %}
+            <div class="alert alert-success" role="alert">{{ flash_success }}</div>
+        {% endfor %}
+
         <div class="card shadow-sm">
             <div class="card-body p-4">
-                {{ form_start(registrationForm) }}
+                {{ form_start(registrationForm, {'attr': {'novalidate': 'novalidate'}}) }}
                     {{ form_errors(registrationForm) }}
 
                     <div class="mb-3">
-                        {{ form_label(registrationForm.email, 'Email') }}
-                        {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control'}}) }}
-                        {{ form_errors(registrationForm.email) }}
+                        {{ form_label(registrationForm.email) }}
+                        {{ form_widget(registrationForm.email) }}
+                        <div class="form-text text-danger">
+                            {{ form_errors(registrationForm.email) }}
+                        </div>
                     </div>
 
                     <div class="mb-3">
-                        {{ form_label(registrationForm.plainPassword, 'Mot de passe') }}
-                        {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-control'}}) }}
-                        {{ form_errors(registrationForm.plainPassword) }}
+                        {{ form_label(registrationForm.plainPassword) }}
+                        {{ form_widget(registrationForm.plainPassword) }}
+                        <div class="form-text text-danger">
+                            {{ form_errors(registrationForm.plainPassword) }}
+                        </div>
+                        <div class="form-text">
+                            Le mot de passe doit contenir au moins 6 caractères
+                        </div>
                     </div>
 
                     <div class="mb-3">
                         <div class="form-check">
-                            {{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'form-check-input'}}) }}
-                            {{ form_label(registrationForm.agreeTerms, 'J\'accepte les conditions d\'utilisation', {'label_attr': {'class': 'form-check-label'}}) }}
+                            {{ form_widget(registrationForm.agreeTerms) }}
+                            {{ form_label(registrationForm.agreeTerms) }}
                         </div>
-                        {{ form_errors(registrationForm.agreeTerms) }}
+                        <div class="form-text text-danger">
+                            {{ form_errors(registrationForm.agreeTerms) }}
+                        </div>
                     </div>
 
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-primary">
-                            S'inscrire
+                            <i class="fas fa-user-plus me-2"></i>S'inscrire
                         </button>
                     </div>
                 {{ form_end(registrationForm) }}
@@ -47,7 +64,7 @@
                 <div class="text-center">
                     <p class="mb-0">Déjà un compte ?</p>
                     <a href="{{ path('app_login') }}" class="btn btn-outline-secondary mt-2">
-                        Se connecter
+                        <i class="fas fa-sign-in-alt me-2"></i>Se connecter
                     </a>
                 </div>
             </div>

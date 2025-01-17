@@ -1,54 +1,73 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Créer un nouvel événement{% endblock %}
+{% block title %}Créer un événement{% endblock %}
 
 {% block body %}
-    <div class="container mt-4">
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <h1 class="mb-4">Créer un nouvel événement</h1>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h1 class="h3 mb-4">Créer un événement</h1>
 
-                {% for message in app.flashes('success') %}
-                    <div class="alert alert-success">
-                        {{ message }}
-                    </div>
-                {% endfor %}
+                    {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                    
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            {{ form_label(form.name) }}
+                            {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.name) }}
+                        </div>
 
-                {{ form_start(form, {'attr': {'class': 'needs-validation'}}) }}
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="mb-3">
-                                {{ form_label(form.name, 'Nom de l\'événement') }}
-                                {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
-                                {{ form_errors(form.name) }}
-                            </div>
+                        <div class="col-md-12 mb-3">
+                            {{ form_label(form.description) }}
+                            {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': '4'}}) }}
+                            {{ form_errors(form.description) }}
+                        </div>
 
-                            <div class="mb-3">
-                                {{ form_label(form.date, 'Date') }}
-                                {{ form_widget(form.date, {'attr': {'class': 'form-control'}}) }}
-                                {{ form_errors(form.date) }}
-                            </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.date) }}
+                            {{ form_widget(form.date, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.date) }}
+                        </div>
 
-                            <div class="mb-3">
-                                {{ form_label(form.maxParticipants, 'Nombre maximum de participants') }}
-                                {{ form_widget(form.maxParticipants, {'attr': {'class': 'form-control'}}) }}
-                                {{ form_errors(form.maxParticipants) }}
-                            </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.maxParticipants) }}
+                            {{ form_widget(form.maxParticipants, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.maxParticipants) }}
+                        </div>
 
-                            <div class="mb-3">
-                                {{ form_label(form.description, 'Description') }}
-                                {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 4}}) }}
-                                {{ form_errors(form.description) }}
-                            </div>
-
-                            <div class="d-flex justify-content-between">
-                                <a href="{{ path('app_event_index') }}" class="btn btn-secondary">Retour à la liste</a>
-                                <button type="submit" class="btn btn-primary">Créer l'événement</button>
-                            </div>
+                        <div class="col-md-12 mb-3">
+                            {{ form_label(form.games) }}
+                            {{ form_widget(form.games, {'attr': {'class': 'form-control select2'}}) }}
+                            {{ form_errors(form.games) }}
                         </div>
                     </div>
-                {{ form_end(form) }}
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ path('app_event_index') }}" class="btn btn-outline-secondary me-2">Annuler</a>
+                        <button type="submit" class="btn btn-primary">Créer l'événement</button>
+                    </div>
+
+                    {{ form_end(form) }}
+                </div>
             </div>
         </div>
     </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.select2').select2({
+            theme: 'classic',
+            placeholder: 'Sélectionnez les jeux...',
+            allowClear: true
+        });
+    });
+</script>
 {% endblock %}

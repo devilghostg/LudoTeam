@@ -8,7 +8,7 @@
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
             <style>
-            .main-content {
+                .main-content {
                     width: 100%;
                     padding-left: 90px; /* Espace pour la nav repliée */
                 }
@@ -137,28 +137,6 @@
                     }
                 }
 
-                .notification-badge {
-                    position: absolute;
-                    top: -5px;
-                    right: -5px;
-                    background: #FF4B4B;
-                    color: white;
-                    border-radius: 50%;
-                    width: 20px;
-                    height: 20px;
-                    font-size: 0.8rem;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    animation: pulse 2s infinite;
-                }
-
-                @keyframes pulse {
-                    0% { transform: scale(1); }
-                    50% { transform: scale(1.2); }
-                    100% { transform: scale(1); }
-                }
-
                 .main-content {
                     margin-left: 0;
                     width: 100%;
@@ -199,13 +177,6 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-user"></i>
-                            <span>Profil</span>
-                            <div class="notification-badge">2</div>
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="{{ path('app_logout') }}">
                             <i class="fas fa-sign-out-alt"></i>
                             <span>Déconnexion</span>
@@ -222,50 +193,10 @@
             </ul>
         </nav>
 
-        {% if app.user %}
-            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-                <div class="container">
-                    <a class="navbar-brand" href="{{ path('app_event_index') }}">LudoTeam</a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav me-auto">
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ path('app_event_index') }}">Événements</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ path('app_game_index') }}">Jeux</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ path('app_event_new') }}">Créer un événement</a>
-                            </li>
-                        </ul>
-                        <ul class="navbar-nav">
-                            <li class="nav-item">
-                                <span class="nav-link">{{ app.user.email }}</span>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ path('app_logout') }}">Déconnexion</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        {% endif %}
-
         <!-- Contenu Principal -->
         <div class="main-content">
-            <main class="container mt-4">
-                {% block body %}{% endblock %}
-            </main>
+            {% block body %}{% endblock %}
         </div>
-
-        <footer class="bg-light mt-5 py-3">
-            <div class="container text-center">
-                <p class="text-muted mb-0">&copy; {{ "now"|date("Y") }} LudoTeam. Tous droits réservés.</p>
-            </div>
-        </footer>
 
         {% block javascripts %}
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -274,34 +205,29 @@
                     const nav = document.querySelector('.floating-nav');
                     const links = nav.querySelectorAll('.nav-link');
 
-                    // Fonction pour fermer la nav
-                    function collapseNav() {
-                        nav.classList.add('collapsed');
-                    }
-
-                    // Fonction pour ouvrir la nav
-                    function expandNav() {
-                        nav.classList.remove('collapsed');
-                    }
-
-                    // Ajouter les événements de clic sur les liens
-                    links.forEach(link => {
-                        link.addEventListener('click', () => {
-                            // Si ce n'est pas un lien externe (comme le profil), fermer la nav
-                            if (link.getAttribute('href') !== '#') {
-                                collapseNav();
-                            }
-                        });
+                    // Collapse nav when clicking outside
+                    document.addEventListener('click', function(e) {
+                        if (!nav.contains(e.target)) {
+                            nav.classList.add('collapsed');
+                        }
                     });
 
-                    // Ouvrir la nav au survol
-                    nav.addEventListener('mouseenter', expandNav);
-                    
-                    // Fermer la nav quand la souris quitte la nav
-                    nav.addEventListener('mouseleave', collapseNav);
+                    // Expand nav on hover
+                    nav.addEventListener('mouseenter', function() {
+                        nav.classList.remove('collapsed');
+                    });
 
-                    // Fermer la nav au chargement initial
-                    collapseNav();
+                    // Optional: Collapse nav when mouse leaves
+                    nav.addEventListener('mouseleave', function() {
+                        nav.classList.add('collapsed');
+                    });
+
+                    // Collapse nav after clicking a link
+                    links.forEach(link => {
+                        link.addEventListener('click', function() {
+                            nav.classList.add('collapsed');
+                        });
+                    });
                 });
             </script>
         {% endblock %}

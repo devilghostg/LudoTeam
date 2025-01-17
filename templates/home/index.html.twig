@@ -3,6 +3,9 @@
 {% block stylesheets %}
     {{ parent() }}
     <style>
+    .bg-gradient {
+            background: linear-gradient(135deg, rgba(107, 72, 255, 0.1) 0%, rgba(30, 144, 255, 0.1) 100%);
+        }
         .hero-section {
             background: linear-gradient(135deg, #6B48FF 0%, #1E90FF 100%);
             color: white;
@@ -222,6 +225,26 @@
             </div>
         </div>
     </section>
+    <!-- CTA Section -->
+    {% if app.user %}
+        <section class="py-4 bg-gradient">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-md-8 text-center">
+                        <h3 class="mb-4">Envie de contribuer ?</h3>
+                        <div class="d-flex justify-content-center gap-3">
+                            <a href="{{ path('app_game_new') }}" class="btn btn-primary btn-lg">
+                                <i class="fas fa-plus-circle me-2"></i>Ajouter un jeu
+                            </a>
+                            <a href="{{ path('app_event_index') }}" class="btn btn-outline-primary btn-lg">
+                                <i class="fas fa-calendar-plus me-2"></i>Voir les événements
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    {% endif %}
 
     <!-- Features Section -->
         <section class="py-5">
