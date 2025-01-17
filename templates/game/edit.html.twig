@@ -1,0 +1,125 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le Jeu - LudoTeam{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .form-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .form-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .form-header h1 {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+            border: none;
+            padding: 12px 25px;
+            color: white;
+            font-weight: 600;
+            border-radius: 25px;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+            color: white;
+        }
+
+        .btn-cancel {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            padding: 12px 25px;
+            color: #6c757d;
+            font-weight: 600;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            background: #e9ecef;
+            color: #495057;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="form-container">
+                    <div class="form-header">
+                        <h1>Modifier le jeu</h1>
+                        <p class="text-muted">Mettez à jour les informations de votre jeu</p>
+                    </div>
+
+                    {{ form_start(form) }}
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            {{ form_row(form.name, {
+                                'label': 'Nom du jeu',
+                                'attr': {'class': 'form-control', 'placeholder': 'Ex: Monopoly'}
+                            }) }}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            {{ form_row(form.gameType, {
+                                'label': 'Type de jeu',
+                                'attr': {'class': 'form-select'}
+                            }) }}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            {{ form_row(form.maxPlayers, {
+                                'label': 'Nombre maximum de joueurs',
+                                'attr': {'class': 'form-control', 'min': '1'}
+                            }) }}
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            {{ form_row(form.description, {
+                                'label': 'Description',
+                                'attr': {
+                                    'class': 'form-control',
+                                    'rows': '5',
+                                    'placeholder': 'Décrivez le jeu, ses règles, son état...'
+                                }
+                            }) }}
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            {{ form_row(form.isAvailable, {
+                                'label': 'Disponible',
+                                'attr': {'class': 'form-check-input'}
+                            }) }}
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ path('app_game_index') }}" class="btn btn-cancel">
+                            <i class="fas fa-arrow-left me-2"></i>Retour
+                        </a>
+                        <button type="submit" class="btn btn-submit">
+                            <i class="fas fa-save me-2"></i>Enregistrer les modifications
+                        </button>
+                    </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
