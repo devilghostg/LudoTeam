@@ -27,9 +27,9 @@ final class GameController extends AbstractController
     {
         // Récupérer les filtres
         $availability = $request->query->get('availability');
-        $minPlayers = $request->query->get('min_players');
         $maxPlayers = $request->query->get('max_players');
         $searchTerm = $request->query->get('search');
+        $gameType = $request->query->get('game_type');
 
         // Créer la requête de base
         $qb = $gameRepository->createQueryBuilder('g');
@@ -45,14 +45,16 @@ final class GameController extends AbstractController
             }
         }
 
-        // Filtre par nombre de joueurs
-        if ($minPlayers) {
-            $qb->andWhere('g.minPlayers >= :minPlayers')
-               ->setParameter('minPlayers', $minPlayers);
-        }
+        // Filtre par nombre de joueurs maximum
         if ($maxPlayers) {
             $qb->andWhere('g.maxPlayers <= :maxPlayers')
                ->setParameter('maxPlayers', $maxPlayers);
+        }
+
+        // Filtre par type de jeu
+        if ($gameType) {
+            $qb->andWhere('g.gameType = :gameType')
+               ->setParameter('gameType', $gameType);
         }
 
         // Recherche par nom ou description
