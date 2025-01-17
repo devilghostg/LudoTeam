@@ -185,8 +185,8 @@
                         </div>
                     {% else %}
                         <div class="d-flex gap-3 mb-5">
-                            <a href="{{ path('app_event_new') }}" class="btn btn-light btn-lg">
-                                <i class="fas fa-plus-circle me-2"></i>Créer un événement
+                            <a href="{{ path('app_event_index') }}" class="btn btn-light btn-lg">
+                                <i class="fas fa-calendar me-2"></i>Voir les événements
                             </a>
                             <a href="{{ path('app_game_index') }}" class="btn btn-outline-light btn-lg">
                                 <i class="fas fa-dice me-2"></i>Voir les jeux
@@ -224,7 +224,7 @@
     </section>
 
     <!-- Features Section -->
-    <section class="py-5">
+        <section class="py-5">
         <div class="container">
             <div class="row g-4">
                 <div class="col-md-4">
@@ -250,7 +250,7 @@
                     </a>
                 </div>
                 <div class="col-md-4">
-                    <a href="{{ path('app_event_new') }}" class="text-decoration-none text-dark">
+                    <a href="{{ path('app_event_index') }}" class="text-decoration-none text-dark">
                         <div class="feature-card card h-100 p-4">
                             <div class="card-body text-center">
                                 <i class="fas fa-users feature-icon"></i>
