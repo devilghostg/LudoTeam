@@ -214,4 +214,30 @@ final class EventController extends AbstractController
         $this->addFlash('success', 'L\'événement a été supprimé avec succès !');
         return $this->redirectToRoute('app_event_index');
     }
+
+    #[Route('/{id}/join', name: 'app_event_join', methods: ['POST'])]
+    #[IsGranted('ROLE_USER')]
+    public function join(Event $event): Response
+    {
+        $user = $this->getUser();
+
+        // Vérifier si l'événement n'est pas complet
+        if ($event->isFull()) {
+            $this->addFlash('error', 'Désolé, cet événement est complet !');
+            return $this->redirectToRoute('app_event_index');
+        }
+
+        // Vérifier si l'utilisateur n'est pas déjà inscrit
+        if ($event->getParticipants()->contains($user)) {
+            $this->addFlash('error', 'Vous êtes déjà inscrit à cet événement !');
+            return $this->redirectToRoute('app_event_index');
+        }
+
+        // Ajouter l'utilisateur aux participants
+        $event->addParticipant($user);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Vous avez rejoint l\'événement avec succès !');
+        return $this->redirectToRoute('app_event_index');
+    }
 }
